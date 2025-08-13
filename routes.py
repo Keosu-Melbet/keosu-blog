@@ -4,6 +4,12 @@ from forms import LoginForm, ArticleForm
 from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
+from app import app
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
