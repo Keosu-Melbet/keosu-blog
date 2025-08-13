@@ -38,6 +38,9 @@ with app.app_context():
     # Import models and routes
     import models
     import routes
+    import routes_admin
+    app.register_blueprint(routes_admin.admin_bp)
+
     
     # Create all tables
     db.create_all()
