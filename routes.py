@@ -6,10 +6,6 @@ import os
 from werkzeug.utils import secure_filename
 from app import app
 
-@app.route('/')
-def index():
-    return render_template('index.html')
-
 
 admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 
@@ -117,3 +113,17 @@ def delete(id):
     db.session.commit()
     flash('🗑 Bài viết đã bị xóa!', 'warning')
     return redirect(url_for('admin.dashboard'))
+    from flask import render_template
+from app import app
+from models import Category, Article
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+@app.route('/<slug>')
+def category_page(slug):
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    articles = Article.query.filter_by(category_id=category.id).all()
+    return render_template('category.html', category=category, articles=articles)
+
