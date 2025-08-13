@@ -1,0 +1,44 @@
+Tạo một website blog bóng đá chuyên nghiệp mang thương hiệu “Kèo Sư”, đồng bộ giao diện với trang chính https://keo-su-mel-bet.onrender.com/, sử dụng tông màu vàng (#ffd700), đen (#0d0d0d), và font hiện đại (Segoe UI hoặc Roboto).
+
+Yêu cầu:
+
+1. Giao diện:
+   - Tông màu: vàng–đen MelBet
+   - Font: Segoe UI hoặc Roboto
+   - Responsive: hiển thị tốt trên desktop và mobile
+   - Menu điều hướng: Kèo thơm, Lịch thi đấu, Tỷ số trực tiếp, Soi kèo, Mẹo cược, Tin tức, Đại lý MelBet, Liên hệ
+
+2. Chức năng:
+   - Trang chủ hiển thị bài viết nổi bật, banner MelBet, chatbot Kèo Sư
+   - Trang “Kèo thơm hôm nay”: hiển thị tỷ lệ kèo tự động (có thể dùng dữ liệu mẫu nếu chưa có API)
+   - Trang “Lịch thi đấu”: hiển thị lịch các trận theo ngày
+   - Trang “Tỷ số trực tiếp”: nhúng iframe từ 7M hoặc Flashscore.vn
+   - Trang “Soi kèo”: bài viết phân tích trận đấu, chatbot hỗ trợ
+   - Trang “Mẹo cược”: chia sẻ kinh nghiệm chơi kèo, chatbot hỗ trợ
+   - Trang “Tin tức”: hiển thị bài viết thể thao mới nhất
+   - Trang “Đại lý MelBet”: giới thiệu chương trình affiliate, CTA đăng ký
+   - Trang “Liên hệ”: form gửi email hoặc Google Form
+
+3. Hệ thống đăng bài:
+   - Form tạo bài viết: tiêu đề, nội dung, chuyên mục, ảnh
+   - Lưu bài viết vào cơ sở dữ liệu (Replit DB hoặc SQLite)
+   - Hiển thị bài viết theo chuyên mục
+   - Có phân trang và tìm kiếm bài viết
+
+4. Tích hợp chatbot Kèo Sư:
+   - Nhúng iframe chatbot từ Udify: https://udify.app/chatbot/xhJuB06Ye6hfb3s5
+   - Chatbot hiển thị trong từng chuyên mục liên quan
+
+5. Tối ưu SEO:
+   - Thẻ meta: title, description, keywords, og:image
+   - URL thân thiện: /keo-thom, /soi-keo, v.v.
+   - Tạo sitemap.xml và robots.txt
+   - Tối ưu tốc độ tải: lazyload ảnh, minify CSS/JS
+
+6. Triển khai:
+   - Dựng bằng Flask (Python) hoặc Node.js (Express)
+   - Giao diện HTML + CSS + JS
+   - Cơ sở dữ liệu đơn giản, dễ quản lý
+   - Có thể chạy trực tiếp trên Replit
+
+Yêu cầu: tạo website hoàn chỉnh, có thể chạy ngay trên Replit, mang đậm phong cách riêng của “Kèo Sư” — chuyên nghiệp, dễ dùng, tối ưu cho người chơi cá cược 
