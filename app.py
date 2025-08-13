@@ -5,7 +5,9 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import datetime
+from config import Config
 from routes import bp as main_bp
+
 app.register_blueprint(main_bp)
 
 
@@ -23,11 +25,7 @@ app.secret_key = os.environ.get("SESSION_SECRET", "dev-key-change-in-production"
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Configure the database
-app.config["SQLALCHEMY_DATABASE_URI"] = os.environ.get("DATABASE_URL", "sqlite:///keosu.db")
-app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
-    "pool_recycle": 300,
-    "pool_pre_ping": True,
-}
+app.config.from_object(Config)
 
 # Initialize the app with the extension
 db.init_app(app)
