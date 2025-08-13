@@ -6,3 +6,4 @@ gunicorn
 supabase
 email-validator
 WTForms
+Flask-WTF
