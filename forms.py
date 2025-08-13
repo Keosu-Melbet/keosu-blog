@@ -34,3 +34,9 @@ class ContactForm(FlaskForm):
 class SearchForm(FlaskForm):
     query = StringField('Tìm kiếm...', validators=[DataRequired(), Length(max=100)])
     submit = SubmitField('Tìm kiếm')
+    
+class LoginForm(FlaskForm):
+    username = StringField('Tên đăng nhập', validators=[DataRequired(), Length(max=100)])
+    password = StringField('Mật khẩu', validators=[DataRequired(), Length(max=100)])
+    submit = SubmitField('Đăng nhập')
+
