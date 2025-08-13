@@ -6,8 +6,59 @@ from seo_utils import generate_meta_tags
 from datetime import datetime, timedelta
 from sqlalchemy import or_, desc
 import xml.etree.ElementTree as ET
+from flask import Blueprint, render_template, redirect, url_for
+from sqlalchemy import desc
+
+bp = Blueprint('main', __name__)
+
+@bp.route('/<slug>')
+def category_articles(slug):
+    category = Category.query.filter_by(slug=slug).first_or_404()
+    articles = Article.query.filter_by(category_id=category.id, published=True).order_by(desc(Article.created_at)).all()
+
+    meta_tags = generate_meta_tags(
+        title=f"{category.name} - Kèo Sư",
+        description=f"Tổng hợp bài viết thuộc chuyên mục {category.name}.",
+        keywords=f"{category.name}, kèo bóng đá"
+    )
+
+    return render_template('category.html',
+                           category=category,
+                           articles=articles,
+                           meta_tags=meta_tags)
+
+@bp.route('/bai-viet/<slug>')
+def article_detail(slug):
+    article = Article.query.filter_by(slug=slug, published=True).first_or_404()
+
+    meta_tags = generate_meta_tags(
+        title=article.title,
+        description=article.summary,
+        keywords=article.keywords
+    )
+
+    return render_template('article_detail.html',
+                           article=article,
+                           meta_tags=meta_tags)
+
+@bp.route('/bai-viet/<slug>')
+def article_detail(slug):
+    article = Article.query.filter_by(slug=slug, published=True).first_or_404()
+
+    meta_tags = generate_meta_tags(
+        title=article.title,
+        description=article.summary,
+        keywords=article.keywords
+    )
+
+    return render_template('article_detail.html',
+                           article=article,
+                           meta_tags=meta_tags)
+
 
 @app.route('/')
+def home():
+    return render_template('index.html')
 def index():
     """Homepage"""
     featured_articles = Article.query.filter_by(published=True, featured=True).limit(3).all()
