@@ -11,7 +11,7 @@ bp = Blueprint('main', __name__)
 
 @bp.route('/')
 def home():
-    return 'Hello from Blueprint!'
+    return render_template('home.html')  # hoặc return 'Hello'
 
 @bp.route('/<slug>')
 def category_articles_en(slug):
