@@ -35,3 +35,10 @@ def lien_he():
 @app.route('/dai-ly-melbet')
 def dai_ly_melbet():
     return render_template('dai_ly_melbet.html')
+
+@app.route('/search')
+def search():
+    query = request.args.get('q', '')
+    # Bạn có thể xử lý tìm kiếm tại đây, ví dụ lọc bài viết theo tiêu đề
+    return render_template('search.html', query=query)
+
