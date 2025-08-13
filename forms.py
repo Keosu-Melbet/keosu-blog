@@ -2,6 +2,12 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SelectField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Length, Email
 from models import Category
+from flask_wtf.file import FileField, FileAllowed
+
+class ArticleForm(FlaskForm):
+    # ... các trường khác
+    image_file = FileField('Ảnh đại diện', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Chỉ chấp nhận ảnh!')])
+
 
 class ArticleForm(FlaskForm):
     title = StringField('Tiêu đề', validators=[DataRequired(), Length(max=200)])
