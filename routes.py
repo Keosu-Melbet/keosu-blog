@@ -9,6 +9,10 @@ import xml.etree.ElementTree as ET
 
 bp = Blueprint('main', __name__)
 
+@bp.route('/')
+def home():
+    return 'Hello from Blueprint!'
+
 @bp.route('/<slug>')
 def category_articles_en(slug):
     category = Category.query.filter_by(slug=slug).first_or_404()
