@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            <div class="py-5">
+                <!-- Error Icon -->
+                <div class="mb-4">
+                    <i class="fas fa-search fa-5x text-warning mb-3"></i>
+                    <h1 class="display-1 text-warning fw-bold">404</h1>
+                </div>
+                
+                <!-- Error Message -->
+                <h2 class="text-light mb-3">Không Tìm Thấy Trang</h2>
+                <p class="text-muted mb-4">
+                    Trang bạn tìm kiếm không tồn tại hoặc đã được di chuyển. 
+                    Có thể link đã bị thay đổi hoặc bạn đã nhập sai địa chỉ.
+                </p>
+                
+                <!-- Action Buttons -->
+                <div class="mb-5">
+                    <a href="{{ url_for('index') }}" class="btn btn-warning btn-lg me-3">
+                        <i class="fas fa-home me-2"></i>Về Trang Chủ
+                    </a>
+                    <a href="{{ url_for('search') }}" class="btn btn-outline-warning btn-lg">
+                        <i class="fas fa-search me-2"></i>Tìm Kiếm
+                    </a>
+                </div>
+                
+                <!-- Suggestions -->
+                <div class="card bg-dark border-warning">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0">Có Thể Bạn Đang Tìm</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 mb-3">
+                                <a href="{{ url_for('keo_thom') }}" class="btn btn-outline-warning w-100">
+                                    <i class="fas fa-fire mb-2 d-block"></i>
+                                    Kèo Thơm
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{{ url_for('soi_keo') }}" class="btn btn-outline-warning w-100">
+                                    <i class="fas fa-search mb-2 d-block"></i>
+                                    Soi Kèo
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{{ url_for('meo_cuoc') }}" class="btn btn-outline-warning w-100">
+                                    <i class="fas fa-lightbulb mb-2 d-block"></i>
+                                    Mẹo Cược
+                                </a>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <a href="{{ url_for('tin_tuc') }}" class="btn btn-outline-warning w-100">
+                                    <i class="fas fa-newspaper mb-2 d-block"></i>
+                                    Tin Tức
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

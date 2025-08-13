@@ -1,0 +1,719 @@
+{% extends "base.html" %}
+
+{% block title %}{% if query %}Kết quả tìm kiếm cho "{{ query }}"{% else %}Tìm kiếm{% endif %} - Kèo Sư{% endblock %}
+{% block description %}{% if query %}Tìm thấy {{ articles.total if articles else 0 }} kết quả cho "{{ query }}" tại Kèo Sư{% else %}Tìm kiếm bài viết, tin tức và thông tin về cá cược bóng đá tại Kèo Sư{% endif %}{% endblock %}
+
+{% block content %}
+<!-- Search Header -->
+<section class="search-header py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto text-center">
+                <h1 class="display-5">
+                    <i class="fas fa-search text-warning"></i>
+                    {% if query %}
+                    Kết quả tìm kiếm
+                    {% else %}
+                    Tìm kiếm
+                    {% endif %}
+                </h1>
+                {% if query %}
+                <p class="lead">
+                    Tìm thấy <strong>{{ articles.total if articles else 0 }}</strong> kết quả cho 
+                    "<span class="text-warning">{{ query }}</span>"
+                </p>
+                {% else %}
+                <p class="lead">Tìm kiếm bài viết, tin tức và thông tin về cá cược bóng đá</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Form -->
+<section class="search-form-section py-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <form class="search-form-advanced" action="{{ url_for('search') }}" method="GET">
+                    <div class="search-input-group">
+                        <div class="input-group input-group-lg">
+                            <input type="text" 
+                                   class="form-control search-input" 
+                                   name="query" 
+                                   value="{{ query or '' }}"
+                                   placeholder="Nhập từ khóa tìm kiếm..." 
+                                   autocomplete="off">
+                            <button class="btn btn-primary search-btn" type="submit">
+                                <i class="fas fa-search"></i>
+                                Tìm kiếm
+                            </button>
+                        </div>
+                        <div class="search-suggestions" id="searchSuggestions" style="display: none;">
+                            <!-- Search suggestions will be populated here -->
+                        </div>
+                    </div>
+                </form>
+                
+                {% if query %}
+                <div class="search-filters mt-3">
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                        <span class="filter-label">Lọc theo:</span>
+                        <div class="btn-group btn-group-sm" role="group">
+                            <input type="radio" class="btn-check" name="filter" id="filter-all" checked>
+                            <label class="btn btn-outline-primary" for="filter-all">Tất cả</label>
+                            
+                            <input type="radio" class="btn-check" name="filter" id="filter-keo-thom">
+                            <label class="btn btn-outline-primary" for="filter-keo-thom">Kèo thơm</label>
+                            
+                            <input type="radio" class="btn-check" name="filter" id="filter-soi-keo">
+                            <label class="btn btn-outline-primary" for="filter-soi-keo">Soi kèo</label>
+                            
+                            <input type="radio" class="btn-check" name="filter" id="filter-meo-cuoc">
+                            <label class="btn btn-outline-primary" for="filter-meo-cuoc">Mẹo cược</label>
+                            
+                            <input type="radio" class="btn-check" name="filter" id="filter-tin-tuc">
+                            <label class="btn btn-outline-primary" for="filter-tin-tuc">Tin tức</label>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Search Results -->
+<section class="search-results py-5">
+    <div class="container">
+        {% if query %}
+            {% if articles and articles.items %}
+            <!-- Results Header -->
+            <div class="results-header mb-4">
+                <div class="row align-items-center">
+                    <div class="col-lg-6">
+                        <h3>
+                            <i class="fas fa-list"></i>
+                            Kết quả tìm kiếm
+                            <span class="badge bg-warning text-dark ms-2">{{ articles.total }}</span>
+                        </h3>
+                    </div>
+                    <div class="col-lg-6">
+                        <div class="d-flex justify-content-end">
+                            <div class="btn-group btn-group-sm" role="group">
+                                <button type="button" class="btn btn-outline-primary active" onclick="sortResults('relevance')">
+                                    <i class="fas fa-sort-amount-down"></i> Liên quan
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" onclick="sortResults('newest')">
+                                    <i class="fas fa-clock"></i> Mới nhất
+                                </button>
+                                <button type="button" class="btn btn-outline-primary" onclick="sortResults('popular')">
+                                    <i class="fas fa-eye"></i> Xem nhiều
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Results Grid -->
+            <div class="results-grid" id="resultsGrid">
+                <div class="row">
+                    {% for article in articles.items %}
+                    <div class="col-lg-6 mb-4 result-item" 
+                         data-category="{{ article.category.slug }}"
+                         data-date="{{ article.created_at.timestamp() }}"
+                         data-views="{{ article.views }}">
+                        <div class="result-card">
+                            <div class="row g-0">
+                                <div class="col-md-4">
+                                    {% if article.featured_image %}
+                                    <img src="{{ url_for('static', filename=article.featured_image) }}" 
+                                         class="result-image" 
+                                         alt="{{ article.title }}">
+                                    {% else %}
+                                    <div class="result-image-placeholder">
+                                        <i class="fas fa-{{ 'fire' if article.category.slug == 'keo-thom' else 'search' if article.category.slug == 'soi-keo' else 'lightbulb' if article.category.slug == 'meo-cuoc' else 'newspaper' }} fa-2x text-warning"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-8">
+                                    <div class="result-content">
+                                        <div class="result-meta">
+                                            <span class="badge-category">{{ article.category.name }}</span>
+                                            <span class="result-date">
+                                                <i class="fas fa-calendar"></i>
+                                                {{ article.created_at.strftime('%d/%m/%Y') }}
+                                            </span>
+                                        </div>
+                                        
+                                        <h5 class="result-title">
+                                            <a href="{{ url_for('article_detail', slug=article.slug) }}">
+                                                {{ article.title|highlight_search(query) if query else article.title }}
+                                            </a>
+                                        </h5>
+                                        
+                                        <p class="result-excerpt">
+                                            {{ article.get_excerpt(100)|highlight_search(query) if query else article.get_excerpt(100) }}
+                                        </p>
+                                        
+                                        <div class="result-footer">
+                                            <div class="result-stats">
+                                                <small>
+                                                    <i class="fas fa-eye"></i>
+                                                    {{ article.views }} lượt xem
+                                                </small>
+                                                <small>
+                                                    <i class="fas fa-user"></i>
+                                                    {{ article.author }}
+                                                </small>
+                                            </div>
+                                            <a href="{{ url_for('article_detail', slug=article.slug) }}" 
+                                               class="btn btn-outline-primary btn-sm">
+                                                <i class="fas fa-arrow-right"></i>
+                                                Đọc tiếp
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Pagination -->
+            {% if articles.pages > 1 %}
+            <nav aria-label="Phân trang kết quả tìm kiếm" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    {% if articles.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('search', query=query, page=articles.prev_num) }}">
+                            <i class="fas fa-chevron-left"></i>
+                            Trang trước
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in articles.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != articles.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('search', query=query, page=page_num) }}">
+                                    {{ page_num }}
+                                </a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if articles.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('search', query=query, page=articles.next_num) }}">
+                            Trang sau
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+            
+            {% else %}
+            <!-- No Results -->
+            <div class="no-results text-center py-5">
+                <div class="no-results-icon mb-4">
+                    <i class="fas fa-search fa-5x text-muted"></i>
+                </div>
+                <h3>Không tìm thấy kết quả</h3>
+                <p class="text-muted mb-4">
+                    Không tìm thấy bài viết nào cho từ khóa "<strong>{{ query }}</strong>". 
+                    Hãy thử với từ khóa khác hoặc kiểm tra lại chính tả.
+                </p>
+                
+                <div class="search-suggestions-box">
+                    <h5>Gợi ý tìm kiếm:</h5>
+                    <div class="suggestion-tags">
+                        <a href="{{ url_for('search') }}?query=kèo thơm" class="suggestion-tag">kèo thơm</a>
+                        <a href="{{ url_for('search') }}?query=soi kèo" class="suggestion-tag">soi kèo</a>
+                        <a href="{{ url_for('search') }}?query=mẹo cược" class="suggestion-tag">mẹo cược</a>
+                        <a href="{{ url_for('search') }}?query=Premier League" class="suggestion-tag">Premier League</a>
+                        <a href="{{ url_for('search') }}?query=Champions League" class="suggestion-tag">Champions League</a>
+                        <a href="{{ url_for('search') }}?query=Barcelona" class="suggestion-tag">Barcelona</a>
+                        <a href="{{ url_for('search') }}?query=Manchester United" class="suggestion-tag">Manchester United</a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+        <!-- Default Search Page -->
+        <div class="default-search text-center py-5">
+            <div class="search-icon mb-4">
+                <i class="fas fa-search fa-5x text-warning"></i>
+            </div>
+            <h3>Tìm kiếm thông tin</h3>
+            <p class="text-muted mb-4">
+                Nhập từ khóa để tìm kiếm bài viết, tin tức và thông tin về cá cược bóng đá
+            </p>
+            
+            <div class="popular-searches">
+                <h5>Từ khóa phổ biến:</h5>
+                <div class="popular-tags">
+                    <a href="{{ url_for('search') }}?query=kèo thơm hôm nay" class="popular-tag">kèo thơm hôm nay</a>
+                    <a href="{{ url_for('search') }}?query=soi kèo Premier League" class="popular-tag">soi kèo Premier League</a>
+                    <a href="{{ url_for('search') }}?query=mẹo cược bóng đá" class="popular-tag">mẹo cược bóng đá</a>
+                    <a href="{{ url_for('search') }}?query=tỷ lệ kèo" class="popular-tag">tỷ lệ kèo</a>
+                    <a href="{{ url_for('search') }}?query=phân tích kèo" class="popular-tag">phân tích kèo</a>
+                    <a href="{{ url_for('search') }}?query=dự đoán bóng đá" class="popular-tag">dự đoán bóng đá</a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Quick Links -->
+<section class="quick-links py-5 bg-light">
+    <div class="container">
+        <h3 class="text-center mb-4">
+            <i class="fas fa-bolt"></i>
+            Hoặc khám phá các chuyên mục
+        </h3>
+        <div class="row">
+            {% for category in get_categories() %}
+            <div class="col-lg-3 col-md-6 mb-3">
+                <a href="{{ url_for('category_articles', slug=category.slug) }}" class="quick-link-card">
+                    <i class="fas fa-{{ 'fire' if category.slug == 'keo-thom' else 'search' if category.slug == 'soi-keo' else 'lightbulb' if category.slug == 'meo-cuoc' else 'newspaper' if category.slug == 'tin-tuc' else 'calendar' }}"></i>
+                    <span>{{ category.name }}</span>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<style>
+.search-input-group {
+    position: relative;
+}
+
+.search-input {
+    border: 3px solid var(--primary-yellow);
+    border-radius: 25px 0 0 25px;
+    padding: 15px 25px;
+    font-size: 1.1rem;
+}
+
+.search-input:focus {
+    border-color: var(--primary-yellow);
+    box-shadow: 0 0 0 0.2rem rgba(255, 215, 0, 0.25);
+}
+
+.search-btn {
+    border-radius: 0 25px 25px 0;
+    padding: 15px 30px;
+    font-weight: 600;
+    border: 3px solid var(--primary-yellow);
+    border-left: none;
+}
+
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid var(--primary-yellow);
+    border-top: none;
+    border-radius: 0 0 15px 15px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.suggestion-item {
+    padding: 12px 20px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.3s ease;
+}
+
+.suggestion-item:hover {
+    background: var(--light-gray);
+}
+
+.search-filters {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: var(--primary-black);
+}
+
+.result-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    height: 100%;
+}
+
+.result-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+}
+
+.result-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.result-image-placeholder {
+    width: 100%;
+    height: 150px;
+    background: var(--light-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.result-content {
+    padding: 20px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.result-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.badge-category {
+    background: var(--primary-yellow);
+    color: var(--primary-black);
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.75rem;
+}
+
+.result-date {
+    color: var(--text-gray);
+    font-size: 0.8rem;
+}
+
+.result-title {
+    margin-bottom: 12px;
+    line-height: 1.4;
+}
+
+.result-title a {
+    color: var(--primary-black);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.result-title a:hover {
+    color: var(--primary-yellow);
+}
+
+.result-excerpt {
+    color: var(--text-gray);
+    line-height: 1.5;
+    margin-bottom: 15px;
+    flex-grow: 1;
+}
+
+.result-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+}
+
+.result-stats {
+    display: flex;
+    gap: 15px;
+}
+
+.result-stats small {
+    color: var(--text-gray);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.no-results,
+.default-search {
+    background: white;
+    border-radius: 20px;
+    padding: 60px 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.search-suggestions-box,
+.popular-searches {
+    background: var(--light-gray);
+    border-radius: 15px;
+    padding: 25px;
+    margin-top: 30px;
+}
+
+.suggestion-tags,
+.popular-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.suggestion-tag,
+.popular-tag {
+    background: var(--primary-yellow);
+    color: var(--primary-black);
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.suggestion-tag:hover,
+.popular-tag:hover {
+    background: var(--primary-black);
+    color: var(--primary-yellow);
+    transform: translateY(-2px);
+}
+
+.quick-link-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 25px 15px;
+    background: white;
+    border-radius: 15px;
+    text-decoration: none;
+    color: var(--primary-black);
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.quick-link-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(255, 215, 0, 0.2);
+    color: var(--primary-yellow);
+}
+
+.quick-link-card i {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    color: var(--primary-yellow);
+}
+
+.quick-link-card span {
+    font-weight: 600;
+}
+
+/* Highlight search terms */
+.highlight {
+    background: var(--primary-yellow);
+    color: var(--primary-black);
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .search-filters {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    
+    .result-meta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+    
+    .result-footer {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .result-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+    
+    .suggestion-tags,
+    .popular-tags {
+        justify-content: flex-start;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const searchInput = document.querySelector('.search-input');
+    const suggestionsContainer = document.getElementById('searchSuggestions');
+    
+    // Search suggestions
+    if (searchInput) {
+        let searchTimeout;
+        
+        searchInput.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            const query = this.value.trim();
+            
+            if (query.length >= 2) {
+                searchTimeout = setTimeout(() => {
+                    showSearchSuggestions(query);
+                }, 300);
+            } else {
+                hideSuggestions();
+            }
+        });
+        
+        // Hide suggestions when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-input-group')) {
+                hideSuggestions();
+            }
+        });
+    }
+    
+    // Filter functionality
+    const filterButtons = document.querySelectorAll('input[name="filter"]');
+    filterButtons.forEach(button => {
+        button.addEventListener('change', function() {
+            filterResults(this.id.replace('filter-', ''));
+        });
+    });
+});
+
+function showSearchSuggestions(query) {
+    // Mock suggestions - in real app, this would be an AJAX call
+    const suggestions = [
+        'kèo thơm hôm nay',
+        'soi kèo Premier League',
+        'mẹo cược bóng đá',
+        'tỷ lệ kèo',
+        'phân tích kèo Champions League',
+        'dự đoán kèo Barcelona'
+    ].filter(s => s.toLowerCase().includes(query.toLowerCase()));
+    
+    const container = document.getElementById('searchSuggestions');
+    
+    if (suggestions.length > 0) {
+        container.innerHTML = suggestions.map(suggestion => 
+            `<div class="suggestion-item" onclick="selectSuggestion('${suggestion}')">${suggestion}</div>`
+        ).join('');
+        container.style.display = 'block';
+    } else {
+        hideSuggestions();
+    }
+}
+
+function hideSuggestions() {
+    document.getElementById('searchSuggestions').style.display = 'none';
+}
+
+function selectSuggestion(suggestion) {
+    document.querySelector('.search-input').value = suggestion;
+    hideSuggestions();
+    document.querySelector('.search-form-advanced').submit();
+}
+
+function filterResults(category) {
+    const resultItems = document.querySelectorAll('.result-item');
+    
+    resultItems.forEach(item => {
+        if (category === 'all' || item.dataset.category === category) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // Update results count
+    const visibleResults = document.querySelectorAll('.result-item[style*="block"], .result-item:not([style])').length;
+    const resultsCount = document.querySelector('.badge.bg-warning');
+    if (resultsCount) {
+        resultsCount.textContent = category === 'all' ? '{{ articles.total if articles else 0 }}' : visibleResults;
+    }
+}
+
+function sortResults(criteria) {
+    const grid = document.getElementById('resultsGrid');
+    if (!grid) return;
+    
+    const results = Array.from(grid.querySelectorAll('.result-item'));
+    
+    // Update active button
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Sort results
+    results.sort((a, b) => {
+        switch(criteria) {
+            case 'newest':
+                return parseFloat(b.dataset.date) - parseFloat(a.dataset.date);
+            case 'popular':
+                return parseInt(b.dataset.views) - parseInt(a.dataset.views);
+            case 'relevance':
+            default:
+                return 0; // Keep original order for relevance
+        }
+    });
+    
+    // Reorder DOM elements
+    const row = grid.querySelector('.row');
+    results.forEach(result => {
+        row.appendChild(result);
+    });
+    
+    // Add animation
+    results.forEach((result, index) => {
+        result.style.opacity = '0';
+        result.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            result.style.transition = 'all 0.3s ease';
+            result.style.opacity = '1';
+            result.style.transform = 'translateY(0)';
+        }, index * 50);
+    });
+}
+
+// Track search events
+if (typeof gtag !== 'undefined' && '{{ query }}') {
+    gtag('event', 'search', {
+        search_term: '{{ query }}',
+        results_count: {{ articles.total if articles else 0 }}
+    });
+}
+</script>
+{% endblock %}

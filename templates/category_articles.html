@@ -1,0 +1,608 @@
+{% extends "base.html" %}
+
+{% block title %}{{ category.name }} - Kèo Sư{% endblock %}
+{% block description %}{{ category.description }}. Khám phá những bài viết chất lượng trong chuyên mục {{ category.name }} tại Kèo Sư{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="page-header py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <nav aria-label="breadcrumb" class="mb-3">
+                    <ol class="breadcrumb bg-transparent p-0 mb-0">
+                        <li class="breadcrumb-item">
+                            <a href="{{ url_for('index') }}" class="text-warning">
+                                <i class="fas fa-home"></i> Trang chủ
+                            </a>
+                        </li>
+                        <li class="breadcrumb-item active text-white">{{ category.name }}</li>
+                    </ol>
+                </nav>
+                
+                <h1 class="display-4">
+                    <i class="fas fa-{{ 'fire' if category.slug == 'keo-thom' else 'search' if category.slug == 'soi-keo' else 'lightbulb' if category.slug == 'meo-cuoc' else 'newspaper' if category.slug == 'tin-tuc' else 'calendar' }} text-warning"></i>
+                    {{ category.name }}
+                </h1>
+                <p class="lead">{{ category.description }}</p>
+            </div>
+            <div class="col-lg-4">
+                <div class="category-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">{{ articles.total if articles else 0 }}</span>
+                        <span class="stat-label">Bài viết</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Category Description -->
+{% if category.description %}
+<section class="category-intro py-4 bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-10 mx-auto text-center">
+                <div class="intro-content">
+                    <p class="lead">{{ category.description }}</p>
+                    {% if category.slug == 'keo-thom' %}
+                    <div class="category-features">
+                        <span class="feature-badge"><i class="fas fa-fire"></i> Kèo hot hôm nay</span>
+                        <span class="feature-badge"><i class="fas fa-chart-line"></i> Tỷ lệ thắng cao</span>
+                        <span class="feature-badge"><i class="fas fa-clock"></i> Cập nhật liên tục</span>
+                    </div>
+                    {% elif category.slug == 'soi-keo' %}
+                    <div class="category-features">
+                        <span class="feature-badge"><i class="fas fa-microscope"></i> Phân tích chuyên sâu</span>
+                        <span class="feature-badge"><i class="fas fa-users"></i> Đội ngũ chuyên gia</span>
+                        <span class="feature-badge"><i class="fas fa-target"></i> Dự đoán chính xác</span>
+                    </div>
+                    {% elif category.slug == 'meo-cuoc' %}
+                    <div class="category-features">
+                        <span class="feature-badge"><i class="fas fa-lightbulb"></i> Kinh nghiệm thực chiến</span>
+                        <span class="feature-badge"><i class="fas fa-graduation-cap"></i> Từ chuyên gia</span>
+                        <span class="feature-badge"><i class="fas fa-trophy"></i> Chiến lược thắng lợi</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- Articles Grid -->
+<section class="articles-section py-5">
+    <div class="container">
+        {% if articles and articles.items %}
+        <!-- Sort and Filter Options -->
+        <div class="row mb-4">
+            <div class="col-lg-6">
+                <h3>
+                    <i class="fas fa-newspaper"></i>
+                    Bài viết trong {{ category.name }}
+                    <span class="badge bg-warning text-dark ms-2">{{ articles.total }}</span>
+                </h3>
+            </div>
+            <div class="col-lg-6">
+                <div class="d-flex justify-content-end">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active" onclick="sortArticles('newest')">
+                            <i class="fas fa-clock"></i> Mới nhất
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" onclick="sortArticles('popular')">
+                            <i class="fas fa-eye"></i> Xem nhiều
+                        </button>
+                        <button type="button" class="btn btn-outline-primary" onclick="sortArticles('featured')">
+                            <i class="fas fa-star"></i> Nổi bật
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="articles-grid" id="articlesGrid">
+            <div class="row">
+                {% for article in articles.items %}
+                <div class="col-lg-4 col-md-6 mb-4 article-item" 
+                     data-date="{{ article.created_at.timestamp() }}"
+                     data-views="{{ article.views }}"
+                     data-featured="{{ 'true' if article.featured else 'false' }}">
+                    <div class="article-card">
+                        {% if article.featured_image %}
+                        <div class="article-image-container">
+                            <img src="{{ url_for('static', filename=article.featured_image) }}" 
+                                 class="card-img-top" 
+                                 alt="{{ article.title }}"
+                                 loading="lazy">
+                            {% if article.featured %}
+                            <div class="featured-badge">
+                                <i class="fas fa-star"></i>
+                                Nổi bật
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="card-img-top bg-warning d-flex align-items-center justify-content-center article-image-placeholder">
+                            <i class="fas fa-{{ 'fire' if category.slug == 'keo-thom' else 'search' if category.slug == 'soi-keo' else 'lightbulb' if category.slug == 'meo-cuoc' else 'newspaper' }} fa-3x text-dark"></i>
+                            {% if article.featured %}
+                            <div class="featured-badge">
+                                <i class="fas fa-star"></i>
+                                Nổi bật
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                        
+                        <div class="card-body">
+                            <div class="article-meta-small">
+                                <span class="badge-category">{{ category.name }}</span>
+                                <span class="article-date">
+                                    <i class="fas fa-calendar"></i>
+                                    {{ article.created_at.strftime('%d/%m/%Y') }}
+                                </span>
+                            </div>
+                            
+                            <h5 class="card-title">
+                                <a href="{{ url_for('article_detail', slug=article.slug) }}">
+                                    {{ article.title }}
+                                </a>
+                            </h5>
+                            
+                            <p class="card-text">{{ article.get_excerpt(120) }}</p>
+                            
+                            <div class="card-footer-custom">
+                                <div class="article-stats">
+                                    <small>
+                                        <i class="fas fa-eye"></i>
+                                        {{ article.views }} lượt xem
+                                    </small>
+                                    <small>
+                                        <i class="fas fa-user"></i>
+                                        {{ article.author }}
+                                    </small>
+                                </div>
+                                <a href="{{ url_for('article_detail', slug=article.slug) }}" 
+                                   class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-arrow-right"></i>
+                                    Đọc tiếp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- Pagination -->
+        {% if articles.pages > 1 %}
+        <nav aria-label="Phân trang bài viết" class="mt-5">
+            <ul class="pagination justify-content-center">
+                {% if articles.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('category_articles', slug=category.slug, page=articles.prev_num) }}">
+                        <i class="fas fa-chevron-left"></i>
+                        Trang trước
+                    </a>
+                </li>
+                {% endif %}
+                
+                {% for page_num in articles.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != articles.page %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('category_articles', slug=category.slug, page=page_num) }}">
+                                {{ page_num }}
+                            </a>
+                        </li>
+                        {% else %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ page_num }}</span>
+                        </li>
+                        {% endif %}
+                    {% else %}
+                    <li class="page-item disabled">
+                        <span class="page-link">...</span>
+                    </li>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if articles.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('category_articles', slug=category.slug, page=articles.next_num) }}">
+                        Trang sau
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+        
+        {% else %}
+        <!-- Empty State -->
+        <div class="empty-state text-center py-5">
+            <div class="empty-icon mb-4">
+                <i class="fas fa-folder-open fa-5x text-muted"></i>
+            </div>
+            <h3>Chưa có bài viết nào</h3>
+            <p class="text-muted">
+                Chuyên mục {{ category.name }} hiện chưa có bài viết nào. 
+                Hãy quay lại sau để xem những nội dung mới nhất.
+            </p>
+            <div class="mt-4">
+                <a href="{{ url_for('index') }}" class="btn btn-primary">
+                    <i class="fas fa-home"></i>
+                    Về trang chủ
+                </a>
+                <a href="{{ url_for('tin_tuc') }}" class="btn btn-outline-primary">
+                    <i class="fas fa-newspaper"></i>
+                    Xem tin tức
+                </a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Related Categories -->
+<section class="related-categories py-5 bg-light">
+    <div class="container">
+        <h3 class="section-title">
+            <i class="fas fa-th-large"></i>
+            Chuyên mục khác
+        </h3>
+        
+        <div class="row">
+            {% for cat in get_categories() %}
+            {% if cat.id != category.id %}
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="category-card">
+                    <div class="category-icon">
+                        <i class="fas fa-{{ 'fire' if cat.slug == 'keo-thom' else 'search' if cat.slug == 'soi-keo' else 'lightbulb' if cat.slug == 'meo-cuoc' else 'newspaper' if cat.slug == 'tin-tuc' else 'calendar' }} fa-2x text-warning"></i>
+                    </div>
+                    <h5>{{ cat.name }}</h5>
+                    <p>{{ cat.description }}</p>
+                    <a href="{{ url_for('category_articles', slug=cat.slug) }}" class="btn btn-outline-primary">
+                        Xem bài viết
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Signup -->
+<section class="newsletter-section py-5 bg-dark text-white">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h3>
+                    <i class="fas fa-envelope"></i>
+                    Đăng ký nhận thông báo
+                </h3>
+                <p>Nhận những bài viết mới nhất trong chuyên mục {{ category.name }} qua email</p>
+            </div>
+            <div class="col-lg-4">
+                <form class="newsletter-form">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Email của bạn" required>
+                        <button class="btn btn-warning" type="submit">
+                            <i class="fas fa-paper-plane"></i>
+                            Đăng ký
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.category-stats {
+    text-align: center;
+    background: rgba(255, 215, 0, 0.1);
+    padding: 20px;
+    border-radius: 15px;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: 900;
+    color: var(--primary-yellow);
+    display: block;
+}
+
+.stat-label {
+    color: white;
+    font-weight: 600;
+}
+
+.intro-content {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.category-features {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.feature-badge {
+    background: var(--primary-yellow);
+    color: var(--primary-black);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.article-card {
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.article-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.article-image-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.article-image-container img,
+.article-image-placeholder {
+    height: 200px;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.article-card:hover .article-image-container img {
+    transform: scale(1.05);
+}
+
+.featured-badge {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: var(--primary-yellow);
+    color: var(--primary-black);
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.card-body {
+    padding: 20px;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.article-meta-small {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.badge-category {
+    background: var(--primary-yellow);
+    color: var(--primary-black);
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.article-date {
+    color: var(--text-gray);
+    font-size: 0.85rem;
+}
+
+.card-title {
+    margin-bottom: 15px;
+    line-height: 1.4;
+}
+
+.card-title a {
+    color: var(--primary-black);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.card-title a:hover {
+    color: var(--primary-yellow);
+}
+
+.card-text {
+    color: var(--text-gray);
+    line-height: 1.6;
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.card-footer-custom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: auto;
+    padding-top: 15px;
+    border-top: 1px solid var(--border-color);
+}
+
+.article-stats {
+    display: flex;
+    gap: 15px;
+}
+
+.article-stats small {
+    color: var(--text-gray);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.category-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    height: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+}
+
+.category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+}
+
+.category-icon {
+    margin-bottom: 20px;
+}
+
+.category-card h5 {
+    color: var(--primary-black);
+    margin-bottom: 15px;
+}
+
+.category-card p {
+    color: var(--text-gray);
+    margin-bottom: 25px;
+}
+
+.empty-state {
+    background: white;
+    border-radius: 20px;
+    padding: 60px 40px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+}
+
+.newsletter-form .input-group {
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.newsletter-form .form-control {
+    border: none;
+    padding: 12px 20px;
+}
+
+.newsletter-form .btn {
+    border: none;
+    padding: 12px 25px;
+    font-weight: 600;
+}
+
+@media (max-width: 768px) {
+    .category-features {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .article-meta-small {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    
+    .card-footer-custom {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+    
+    .article-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+</style>
+
+<script>
+function sortArticles(criteria) {
+    const grid = document.getElementById('articlesGrid');
+    const articles = Array.from(grid.querySelectorAll('.article-item'));
+    
+    // Update active button
+    document.querySelectorAll('.btn-group .btn').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    event.target.classList.add('active');
+    
+    // Sort articles
+    articles.sort((a, b) => {
+        switch(criteria) {
+            case 'newest':
+                return parseFloat(b.dataset.date) - parseFloat(a.dataset.date);
+            case 'popular':
+                return parseInt(b.dataset.views) - parseInt(a.dataset.views);
+            case 'featured':
+                const aFeatured = a.dataset.featured === 'true' ? 1 : 0;
+                const bFeatured = b.dataset.featured === 'true' ? 1 : 0;
+                if (bFeatured !== aFeatured) {
+                    return bFeatured - aFeatured;
+                }
+                return parseFloat(b.dataset.date) - parseFloat(a.dataset.date);
+            default:
+                return 0;
+        }
+    });
+    
+    // Reorder DOM elements
+    const row = grid.querySelector('.row');
+    articles.forEach(article => {
+        row.appendChild(article);
+    });
+    
+    // Add animation
+    articles.forEach((article, index) => {
+        article.style.opacity = '0';
+        article.style.transform = 'translateY(20px)';
+        
+        setTimeout(() => {
+            article.style.transition = 'all 0.3s ease';
+            article.style.opacity = '1';
+            article.style.transform = 'translateY(0)';
+        }, index * 50);
+    });
+}
+
+// Newsletter form submission
+document.querySelector('.newsletter-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = this.querySelector('input[type="email"]').value;
+    
+    if (email) {
+        KeoSu.showNotification('Cảm ơn bạn đã đăng ký! Chúng tôi sẽ gửi thông báo về email.', 'success');
+        this.reset();
+    }
+});
+</script>
+{% endblock %}

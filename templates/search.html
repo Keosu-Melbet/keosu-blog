@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+            <!-- Page Header -->
+            <div class="page-header mb-4">
+                <h1 class="text-warning">
+                    <i class="fas fa-search me-2"></i>Kết Quả Tìm Kiếm
+                </h1>
+                {% if query %}
+                <p class="text-light">
+                    Từ khóa: "<strong class="text-warning">{{ query }}</strong>" 
+                    - Tìm thấy {{ articles.total }} kết quả
+                </p>
+                {% else %}
+                <p class="text-light">Nhập từ khóa để tìm kiếm bài viết</p>
+                {% endif %}
+            </div>
+
+            <!-- Search Form -->
+            <div class="card bg-dark border-warning mb-4">
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('search') }}">
+                        <div class="input-group input-group-lg">
+                            <input type="text" 
+                                   class="form-control" 
+                                   name="q" 
+                                   value="{{ query }}" 
+                                   placeholder="Tìm kiếm bài viết, kèo, tin tức..."
+                                   required>
+                            <button class="btn btn-warning" type="submit">
+                                <i class="fas fa-search me-2"></i>Tìm kiếm
+                            </button>
+                        </div>
+                        <div class="form-text text-muted mt-2">
+                            Mẹo: Thử tìm "kèo thơm", "soi kèo", "mẹo cược", "Premier League"...
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Search Results -->
+            {% if query %}
+                {% if articles.items %}
+                <div class="row">
+                    {% for article in articles.items %}
+                    <div class="col-lg-6 mb-4">
+                        <article class="card bg-dark border-secondary h-100">
+                            {% if article.featured_image %}
+                            <img src="{{ article.featured_image }}" 
+                                 class="card-img-top" 
+                                 alt="{{ article.title }}" 
+                                 style="height: 180px; object-fit: cover;">
+                            {% endif %}
+                            <div class="card-body">
+                                <span class="badge bg-warning text-dark mb-2">{{ article.category.name }}</span>
+                                <h5 class="card-title">
+                                    <a href="{{ url_for('article_detail', slug=article.slug) }}" 
+                                       class="text-decoration-none text-warning">
+                                        {{ article.title }}
+                                    </a>
+                                </h5>
+                                <p class="card-text text-light">{{ article.get_excerpt(100) }}</p>
+                                
+                                <!-- Highlight search terms -->
+                                {% if query in article.title.lower() or query in article.content.lower() %}
+                                <div class="mt-2">
+                                    <small class="text-success">
+                                        <i class="fas fa-check-circle me-1"></i>Chứa từ khóa tìm kiếm
+                                    </small>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="card-footer bg-transparent border-secondary">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>{{ article.created_at.strftime('%d/%m/%Y') }}
+                                        <i class="fas fa-eye ms-3 me-1"></i>{{ article.views }}
+                                    </small>
+                                    <a href="{{ url_for('article_detail', slug=article.slug) }}" 
+                                       class="btn btn-warning btn-sm">
+                                        Đọc tiếp
+                                    </a>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Pagination -->
+                {% if articles.pages > 1 %}
+                <nav aria-label="Search Pagination">
+                    <ul class="pagination justify-content-center">
+                        {% if articles.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link bg-dark border-secondary text-warning" 
+                               href="{{ url_for('search', q=query, page=articles.prev_num) }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                        
+                        {% for page_num in articles.iter_pages() %}
+                            {% if page_num %}
+                                {% if page_num != articles.page %}
+                                <li class="page-item">
+                                    <a class="page-link bg-dark border-secondary text-warning" 
+                                       href="{{ url_for('search', q=query, page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                                {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link bg-warning text-dark border-warning">{{ page_num }}</span>
+                                </li>
+                                {% endif %}
+                            {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link bg-dark border-secondary text-muted">…</span>
+                            </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if articles.has_next %}
+                        <li class="page-item">
+                            <a class="page-link bg-dark border-secondary text-warning" 
+                               href="{{ url_for('search', q=query, page=articles.next_num) }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+                {% endif %}
+
+                {% else %}
+                <div class="card bg-dark border-secondary">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-search fa-3x text-warning mb-3"></i>
+                        <h5 class="text-light">Không tìm thấy kết quả nào</h5>
+                        <p class="text-muted">Không có bài viết nào chứa từ khóa "{{ query }}"</p>
+                        
+                        <!-- Search Suggestions -->
+                        <div class="mt-4">
+                            <h6 class="text-warning">Gợi ý tìm kiếm:</h6>
+                            <div class="d-flex flex-wrap justify-content-center gap-2">
+                                <a href="{{ url_for('search', q='kèo thơm') }}" class="badge bg-warning text-dark text-decoration-none">kèo thơm</a>
+                                <a href="{{ url_for('search', q='soi kèo') }}" class="badge bg-warning text-dark text-decoration-none">soi kèo</a>
+                                <a href="{{ url_for('search', q='mẹo cược') }}" class="badge bg-warning text-dark text-decoration-none">mẹo cược</a>
+                                <a href="{{ url_for('search', q='Premier League') }}" class="badge bg-warning text-dark text-decoration-none">Premier League</a>
+                                <a href="{{ url_for('search', q='Champions League') }}" class="badge bg-warning text-dark text-decoration-none">Champions League</a>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4">
+                            <a href="{{ url_for('index') }}" class="btn btn-warning me-2">Về trang chủ</a>
+                            <a href="{{ url_for('tin_tuc') }}" class="btn btn-outline-warning">Xem tin tức</a>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <!-- Search Tips -->
+            <div class="card bg-dark border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Mẹo Tìm Kiếm</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled small">
+                        <li class="mb-2">
+                            <i class="fas fa-check text-warning me-2"></i>
+                            Sử dụng từ khóa ngắn gọn
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-warning me-2"></i>
+                            Thử các từ đồng nghĩa
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check text-warning me-2"></i>
+                            Tìm theo tên đội bóng
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-check text-warning me-2"></i>
+                            Tìm theo tên giải đấu
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Popular Searches -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Tìm Kiếm Phổ Biến</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-1">
+                        <a href="{{ url_for('search', q='kèo thơm hôm nay') }}" class="badge bg-secondary text-decoration-none">kèo thơm hôm nay</a>
+                        <a href="{{ url_for('search', q='soi kèo châu á') }}" class="badge bg-secondary text-decoration-none">soi kèo châu á</a>
+                        <a href="{{ url_for('search', q='mẹo cược tài xỉu') }}" class="badge bg-secondary text-decoration-none">mẹo cược tài xỉu</a>
+                        <a href="{{ url_for('search', q='manchester united') }}" class="badge bg-secondary text-decoration-none">manchester united</a>
+                        <a href="{{ url_for('search', q='barcelona') }}" class="badge bg-secondary text-decoration-none">barcelona</a>
+                        <a href="{{ url_for('search', q='real madrid') }}" class="badge bg-secondary text-decoration-none">real madrid</a>
+                        <a href="{{ url_for('search', q='premier league') }}" class="badge bg-secondary text-decoration-none">premier league</a>
+                        <a href="{{ url_for('search', q='champions league') }}" class="badge bg-secondary text-decoration-none">champions league</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Tìm Theo Chuyên Mục</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        {% for category in categories %}
+                        <a href="{{ url_for('category_articles', slug=category.slug) }}" 
+                           class="btn btn-outline-warning btn-sm text-start">
+                            <i class="fas fa-folder me-2"></i>{{ category.name }}
+                            <span class="badge bg-warning text-dark float-end">{{ category.articles|length }}</span>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Advanced Search -->
+            <div class="card bg-dark border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">Tìm Kiếm Nâng Cao</h6>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('search') }}">
+                        <div class="mb-3">
+                            <label class="form-label text-warning small">Từ khóa</label>
+                            <input type="text" class="form-control" name="q" value="{{ query }}">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label text-warning small">Chuyên mục</label>
+                            <select class="form-control" name="category">
+                                <option value="">Tất cả</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-sm w-100">
+                            <i class="fas fa-search me-1"></i>Tìm kiếm
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

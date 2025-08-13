@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+            <!-- Page Header -->
+            <div class="page-header mb-4">
+                <h1 class="text-warning">
+                    <i class="fas fa-folder me-2"></i>{{ category.name }}
+                </h1>
+                {% if category.description %}
+                <p class="text-light">{{ category.description }}</p>
+                {% endif %}
+                <div class="text-muted">
+                    <i class="fas fa-file-alt me-1"></i>{{ articles.total }} bài viết
+                </div>
+            </div>
+
+            <!-- Articles List -->
+            {% if articles.items %}
+            <div class="row">
+                {% for article in articles.items %}
+                <div class="col-lg-6 mb-4">
+                    <article class="card bg-dark border-secondary h-100">
+                        {% if article.featured_image %}
+                        <img src="{{ article.featured_image }}" 
+                             class="card-img-top" 
+                             alt="{{ article.title }}" 
+                             style="height: 200px; object-fit: cover;">
+                        {% endif %}
+                        <div class="card-body">
+                            {% if article.featured %}
+                            <span class="badge bg-warning text-dark mb-2">Nổi bật</span>
+                            {% endif %}
+                            <h5 class="card-title">
+                                <a href="{{ url_for('article_detail', slug=article.slug) }}" 
+                                   class="text-decoration-none text-warning">
+                                    {{ article.title }}
+                                </a>
+                            </h5>
+                            <p class="card-text text-light">{{ article.get_excerpt(120) }}</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-secondary">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <small class="text-muted">
+                                    <i class="fas fa-calendar me-1"></i>{{ article.created_at.strftime('%d/%m/%Y') }}
+                                    <i class="fas fa-eye ms-3 me-1"></i>{{ article.views }}
+                                </small>
+                                <a href="{{ url_for('article_detail', slug=article.slug) }}" 
+                                   class="btn btn-warning btn-sm">
+                                    Đọc tiếp
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Pagination -->
+            {% if articles.pages > 1 %}
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center">
+                    {% if articles.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link bg-dark border-secondary text-warning" 
+                           href="{{ url_for('category_articles', slug=category.slug, page=articles.prev_num) }}">
+                            <i class="fas fa-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for page_num in articles.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != articles.page %}
+                            <li class="page-item">
+                                <a class="page-link bg-dark border-secondary text-warning" 
+                                   href="{{ url_for('category_articles', slug=category.slug, page=page_num) }}">{{ page_num }}</a>
+                            </li>
+                            {% else %}
+                            <li class="page-item active">
+                                <span class="page-link bg-warning text-dark border-warning">{{ page_num }}</span>
+                            </li>
+                            {% endif %}
+                        {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link bg-dark border-secondary text-muted">…</span>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if articles.has_next %}
+                    <li class="page-item">
+                        <a class="page-link bg-dark border-secondary text-warning" 
+                           href="{{ url_for('category_articles', slug=category.slug, page=articles.next_num) }}">
+                            <i class="fas fa-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="card bg-dark border-secondary">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-folder-open fa-3x text-warning mb-3"></i>
+                    <h5 class="text-light">Chưa có bài viết nào trong chuyên mục này</h5>
+                    <p class="text-muted">Vui lòng quay lại sau để xem nội dung mới nhất</p>
+                    <a href="{{ url_for('index') }}" class="btn btn-warning">Về trang chủ</a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <!-- Category Navigation -->
+            <div class="card bg-dark border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-list me-2"></i>Chuyên Mục</h6>
+                </div>
+                <div class="card-body">
+                    <div class="list-group list-group-flush">
+                        {% for cat in categories %}
+                        <a href="{{ url_for('category_articles', slug=cat.slug) }}" 
+                           class="list-group-item list-group-item-action bg-transparent text-light border-secondary
+                                  {% if cat.id == category.id %}active bg-warning text-dark{% endif %}">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>{{ cat.name }}</span>
+                                <span class="badge {% if cat.id == category.id %}bg-dark{% else %}bg-secondary{% endif %}">
+                                    {{ cat.articles|length }}
+                                </span>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular in Category -->
+            {% if articles.items %}
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Phổ Biến Trong {{ category.name }}</h6>
+                </div>
+                <div class="card-body">
+                    {% for article in articles.items|sort(attribute='views', reverse=true)[:5] %}
+                    <div class="mb-3 pb-3 {% if not loop.last %}border-bottom border-secondary{% endif %}">
+                        <h6 class="small mb-1">
+                            <a href="{{ url_for('article_detail', slug=article.slug) }}" 
+                               class="text-decoration-none text-light">
+                                {{ article.title[:50] }}{% if article.title|length > 50 %}...{% endif %}
+                            </a>
+                        </h6>
+                        <small class="text-muted">
+                            <i class="fas fa-eye me-1"></i>{{ article.views }} lượt xem
+                        </small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Quick Actions -->
+            {% if category.slug == 'keo-thom' %}
+            <div class="card bg-warning text-dark mb-4">
+                <div class="card-body text-center">
+                    <h6 class="fw-bold mb-3">🔥 Kèo Thơm Hôm Nay</h6>
+                    <p class="small mb-3">Xem tỷ lệ kèo và khuyến nghị mới nhất</p>
+                    <a href="{{ url_for('keo_thom') }}" class="btn btn-dark btn-sm">Xem Ngay</a>
+                </div>
+            </div>
+            {% elif category.slug == 'soi-keo' %}
+            <div class="card bg-warning text-dark mb-4">
+                <div class="card-body text-center">
+                    <h6 class="fw-bold mb-3">🔍 Soi Kèo Chuyên Nghiệp</h6>
+                    <p class="small mb-3">Phân tích từ đội ngũ chuyên gia</p>
+                    <a href="{{ url_for('soi_keo') }}" class="btn btn-dark btn-sm">Phân Tích</a>
+                </div>
+            </div>
+            {% elif category.slug == 'meo-cuoc' %}
+            <div class="card bg-warning text-dark mb-4">
+                <div class="card-body text-center">
+                    <h6 class="fw-bold mb-3">💡 Mẹo Cược Hay</h6>
+                    <p class="small mb-3">Kinh nghiệm từ cao thủ</p>
+                    <a href="{{ url_for('meo_cuoc') }}" class="btn btn-dark btn-sm">Học Hỏi</a>
+                </div>
+            </div>
+            {% elif category.slug == 'tin-tuc' %}
+            <div class="card bg-warning text-dark mb-4">
+                <div class="card-body text-center">
+                    <h6 class="fw-bold mb-3">📰 Tin Tức Nóng</h6>
+                    <p class="small mb-3">Cập nhật tin tức bóng đá</p>
+                    <a href="{{ url_for('tin_tuc') }}" class="btn btn-dark btn-sm">Đọc Tin</a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- MelBet CTA -->
+            <div class="card bg-dark border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">🎯 MelBet</h6>
+                </div>
+                <div class="card-body text-center">
+                    <p class="text-light small mb-3">Nhà cái uy tín • Tỷ lệ tốt</p>
+                    <a href="{{ url_for('dai_ly_melbet') }}" class="btn btn-warning btn-sm">Đăng Ký</a>
+                </div>
+            </div>
+
+            <!-- Related Categories -->
+            <div class="card bg-dark border-secondary">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Có Thể Bạn Quan Tâm</h6>
+                </div>
+                <div class="card-body">
+                    {% for cat in categories if cat.id != category.id %}
+                    <a href="{{ url_for('category_articles', slug=cat.slug) }}" 
+                       class="badge bg-secondary text-decoration-none me-1 mb-1">
+                        {{ cat.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

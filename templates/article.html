@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Article -->
+            <article class="card bg-dark border-warning mb-4">
+                <!-- Featured Image -->
+                {% if article.featured_image %}
+                <img src="{{ article.featured_image }}" class="card-img-top" alt="{{ article.title }}" 
+                     style="height: 400px; object-fit: cover;">
+                {% endif %}
+                
+                <div class="card-body">
+                    <!-- Category -->
+                    <div class="mb-3">
+                        <a href="{{ url_for('category_articles', slug=article.category.slug) }}" 
+                           class="badge bg-warning text-dark text-decoration-none">
+                            {{ article.category.name }}
+                        </a>
+                    </div>
+                    
+                    <!-- Title -->
+                    <h1 class="text-warning mb-3">{{ article.title }}</h1>
+                    
+                    <!-- Meta Info -->
+                    <div class="d-flex align-items-center text-muted mb-4">
+                        <i class="fas fa-calendar me-2"></i>
+                        <span class="me-4">{{ article.created_at.strftime('%d/%m/%Y %H:%M') }}</span>
+                        <i class="fas fa-eye me-2"></i>
+                        <span class="me-4">{{ article.views }} lượt xem</span>
+                        {% if article.updated_at != article.created_at %}
+                        <i class="fas fa-edit me-2"></i>
+                        <span>Cập nhật: {{ article.updated_at.strftime('%d/%m/%Y') }}</span>
+                        {% endif %}
+                    </div>
+                    
+                    <!-- Content -->
+                    <div class="article-content text-light">
+                        {{ article.content|safe }}
+                    </div>
+                    
+                    <!-- Tags/Keywords -->
+                    {% if article.meta_keywords %}
+                    <div class="mt-4 pt-4 border-top border-secondary">
+                        <h6 class="text-warning mb-2">Từ khóa:</h6>
+                        {% for keyword in article.meta_keywords.split(',') %}
+                        <a href="{{ url_for('search', q=keyword.strip()) }}" 
+                           class="badge bg-secondary text-decoration-none me-1 mb-1">
+                            {{ keyword.strip() }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Social Share -->
+                <div class="card-footer bg-transparent border-warning">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <span class="text-light me-3">Chia sẻ:</span>
+                            <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.url }}" 
+                               target="_blank" class="btn btn-outline-primary btn-sm me-2">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="https://twitter.com/intent/tweet?url={{ request.url }}&text={{ article.title }}" 
+                               target="_blank" class="btn btn-outline-info btn-sm me-2">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="https://t.me/share/url?url={{ request.url }}&text={{ article.title }}" 
+                               target="_blank" class="btn btn-outline-primary btn-sm">
+                                <i class="fab fa-telegram"></i>
+                            </a>
+                        </div>
+                        <div>
+                            <button class="btn btn-outline-warning btn-sm" onclick="copyToClipboard('{{ request.url }}')">
+                                <i class="fas fa-copy me-1"></i>Copy Link
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </article>
+
+            <!-- Related Articles -->
+            {% if related_articles %}
+            <div class="card bg-dark border-secondary">
+                <div class="card-header">
+                    <h5 class="text-warning mb-0">
+                        <i class="fas fa-newspaper me-2"></i>Bài Viết Liên Quan
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for related in related_articles %}
+                        <div class="col-lg-4 col-md-6 mb-3">
+                            <article class="card bg-secondary h-100">
+                                {% if related.featured_image %}
+                                <img src="{{ related.featured_image }}" class="card-img-top" 
+                                     alt="{{ related.title }}" style="height: 150px; object-fit: cover;">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <a href="{{ url_for('article_detail', slug=related.slug) }}" 
+                                           class="text-decoration-none text-light">
+                                            {{ related.title[:50] }}{% if related.title|length > 50 %}...{% endif %}
+                                        </a>
+                                    </h6>
+                                    <p class="card-text text-muted small">
+                                        {{ related.get_excerpt(60) }}
+                                    </p>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <small class="text-muted">
+                                        <i class="fas fa-calendar me-1"></i>{{ related.created_at.strftime('%d/%m') }}
+                                        <i class="fas fa-eye ms-2 me-1"></i>{{ related.views }}
+                                    </small>
+                                </div>
+                            </article>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- MelBet CTA -->
+            <div class="card bg-warning text-dark mb-4">
+                <div class="card-body text-center">
+                    <h6 class="fw-bold mb-3">🎯 Đặt Kèo Tại MelBet</h6>
+                    <p class="small mb-3">Nhà cái uy tín • Tỷ lệ tốt nhất • Thanh toán nhanh</p>
+                    <a href="{{ url_for('dai_ly_melbet') }}" class="btn btn-dark">Đăng Ký Ngay</a>
+                </div>
+            </div>
+
+            <!-- Table of Contents (if article is long) -->
+            {% if article.content|length > 2000 %}
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">
+                        <i class="fas fa-list me-2"></i>Nội Dung Chính
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="toc-content">
+                        <!-- Table of contents will be generated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Category Articles -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Cùng Chuyên Mục</h6>
+                </div>
+                <div class="card-body">
+                    {% for related in related_articles[:5] %}
+                    <div class="mb-3 pb-3 {% if not loop.last %}border-bottom border-secondary{% endif %}">
+                        <h6 class="small mb-1">
+                            <a href="{{ url_for('article_detail', slug=related.slug) }}" 
+                               class="text-decoration-none text-light">
+                                {{ related.title[:60] }}{% if related.title|length > 60 %}...{% endif %}
+                            </a>
+                        </h6>
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>{{ related.created_at.strftime('%d/%m') }}
+                            <i class="fas fa-eye ms-2 me-1"></i>{{ related.views }}
+                        </small>
+                    </div>
+                    {% endfor %}
+                    <div class="text-center">
+                        <a href="{{ url_for('category_articles', slug=article.category.slug) }}" 
+                           class="btn btn-outline-warning btn-sm">
+                            Xem tất cả
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Articles -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Bài Viết Phổ Biến</h6>
+                </div>
+                <div class="card-body">
+                    <!-- This would be populated with actual popular articles in a real implementation -->
+                    <p class="text-muted small">Chưa có dữ liệu bài viết phổ biến</p>
+                </div>
+            </div>
+
+            <!-- Newsletter Signup -->
+            <div class="card bg-dark border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fas fa-envelope me-2"></i>Đăng Ký Nhận Tin
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <p class="text-light small mb-3">Nhận thông báo khi có bài viết mới</p>
+                    <form>
+                        <div class="mb-3">
+                            <input type="email" class="form-control" placeholder="Email của bạn">
+                        </div>
+                        <button type="submit" class="btn btn-warning btn-sm w-100">Đăng Ký</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Chatbot -->
+            <div class="card bg-dark border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">
+                        <i class="fas fa-robot me-2"></i>Kèo Sư AI
+                    </h6>
+                </div>
+                <div class="card-body text-center">
+                    <p class="text-light small mb-3">Có câu hỏi về bài viết này?</p>
+                    <button class="btn btn-warning btn-sm" onclick="toggleChatbot()">
+                        <i class="fas fa-comments me-1"></i>Chat Ngay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Copy to clipboard function
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(function() {
+        alert('Đã sao chép liên kết!');
+    }, function(err) {
+        console.error('Không thể sao chép: ', err);
+    });
+}
+
+// Generate table of contents
+function generateTOC() {
+    const content = document.querySelector('.article-content');
+    const tocContent = document.querySelector('#toc-content');
+    
+    if (!content || !tocContent) return;
+    
+    const headings = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    if (headings.length === 0) return;
+    
+    let toc = '<ul class="list-unstyled">';
+    headings.forEach((heading, index) => {
+        const id = `heading-${index}`;
+        heading.id = id;
+        const level = parseInt(heading.tagName.charAt(1));
+        const indent = level > 2 ? 'ms-3' : '';
+        
+        toc += `<li class="${indent} mb-1">
+            <a href="#${id}" class="text-decoration-none text-light small">
+                ${heading.textContent}
+            </a>
+        </li>`;
+    });
+    toc += '</ul>';
+    
+    tocContent.innerHTML = toc;
+}
+
+// Initialize TOC
+document.addEventListener('DOMContentLoaded', generateTOC);
+
+// Chatbot toggle
+function toggleChatbot() {
+    const chatbotToggle = document.getElementById('chatbot-toggle');
+    const chatbotIframe = document.getElementById('chatbot-iframe');
+    
+    if (chatbotIframe.classList.contains('d-none')) {
+        chatbotIframe.classList.remove('d-none');
+        chatbotToggle.innerHTML = '<i class="fas fa-times fa-lg"></i>';
+    } else {
+        chatbotIframe.classList.add('d-none');
+        chatbotToggle.innerHTML = '<i class="fas fa-comments fa-lg"></i>';
+    }
+}
+
+// Smooth scroll for TOC links
+document.addEventListener('click', function(e) {
+    if (e.target.matches('a[href^="#heading-"]')) {
+        e.preventDefault();
+        const target = document.querySelector(e.target.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-9">
+            <!-- Page Header -->
+            <div class="page-header mb-4">
+                <h1 class="text-warning">
+                    <i class="fas fa-fire me-2"></i>Kèo Thơm Hôm Nay
+                </h1>
+                <p class="text-light">Cập nhật tỷ lệ kèo và những kèo thơm có tỷ lệ thắng cao từ các chuyên gia</p>
+            </div>
+
+            <!-- Betting Odds Table -->
+            <div class="card bg-dark border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Tỷ Lệ Kèo Hôm Nay</h5>
+                </div>
+                <div class="card-body">
+                    {% if odds %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Trận Đấu</th>
+                                    <th>Giải</th>
+                                    <th>Thời Gian</th>
+                                    <th>1X2</th>
+                                    <th>Tài Xỉu</th>
+                                    <th>Châu Á</th>
+                                    <th>Dự Đoán</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for odd in odds %}
+                                <tr>
+                                    <td>
+                                        <strong class="text-warning">{{ odd.home_team }}</strong> vs 
+                                        <strong class="text-warning">{{ odd.away_team }}</strong>
+                                    </td>
+                                    <td><span class="badge bg-secondary">{{ odd.league or 'N/A' }}</span></td>
+                                    <td>{{ odd.match_date.strftime('%H:%M') }}</td>
+                                    <td>
+                                        <small>
+                                            1: {{ "%.2f"|format(odd.home_win) if odd.home_win else 'N/A' }}<br>
+                                            X: {{ "%.2f"|format(odd.draw) if odd.draw else 'N/A' }}<br>
+                                            2: {{ "%.2f"|format(odd.away_win) if odd.away_win else 'N/A' }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            Tài: {{ "%.2f"|format(odd.over_2_5) if odd.over_2_5 else 'N/A' }}<br>
+                                            Xỉu: {{ "%.2f"|format(odd.under_2_5) if odd.under_2_5 else 'N/A' }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <small>
+                                            {{ odd.handicap or 'N/A' }}<br>
+                                            {{ "%.2f"|format(odd.handicap_home) if odd.handicap_home else 'N/A' }} | 
+                                            {{ "%.2f"|format(odd.handicap_away) if odd.handicap_away else 'N/A' }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        {% if odd.recommendation %}
+                                        <span class="badge bg-warning text-dark">{{ odd.recommendation }}</span>
+                                        {% if odd.confidence %}
+                                        <br><small class="text-muted">Độ tin cậy: {{ odd.confidence }}/5</small>
+                                        {% endif %}
+                                        {% else %}
+                                        <span class="text-muted">Chưa có</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-info-circle fa-3x text-warning mb-3"></i>
+                        <h5 class="text-light">Chưa có dữ liệu kèo cho hôm nay</h5>
+                        <p class="text-muted">Vui lòng quay lại sau để xem cập nhật mới nhất</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Tips Section -->
+            <div class="card bg-dark border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-lightbulb me-2"></i>Mẹo Chọn Kèo Thơm</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-warning"><i class="fas fa-check-circle me-2"></i>Phân Tích Form</h6>
+                            <p class="text-light small">Xem xét phong độ gần đây của hai đội, thành tích đối đầu và tình hình lực lượng.</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-warning"><i class="fas fa-chart-bar me-2"></i>So Sánh Tỷ Lệ</h6>
+                            <p class="text-light small">Theo dõi sự biến động tỷ lệ kèo từ nhiều nhà cái để tìm giá trị tốt nhất.</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-warning"><i class="fas fa-money-bill-wave me-2"></i>Quản Lý Vốn</h6>
+                            <p class="text-light small">Chỉ đặt cược với số tiền bạn có thể chấp nhận mất, thường không quá 5% tài khoản.</p>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <h6 class="text-warning"><i class="fas fa-clock me-2"></i>Thời Điểm Đặt Kèo</h6>
+                            <p class="text-light small">Đặt kèo sớm để có tỷ lệ tốt hoặc chờ gần giờ đấu để có thông tin chính xác.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-3">
+            <!-- MelBet CTA -->
+            <div class="card bg-warning text-dark mb-4">
+                <div class="card-body text-center">
+                    <h6 class="fw-bold mb-3">🎯 Đặt Kèo Tại MelBet</h6>
+                    <p class="small mb-3">Tỷ lệ kèo tốt nhất • Thanh toán nhanh</p>
+                    <a href="{{ url_for('dai_ly_melbet') }}" class="btn btn-dark btn-sm">Đăng Ký Ngay</a>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Thống Kê Nhanh</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-light">Kèo hôm nay:</span>
+                        <span class="text-warning">{{ odds|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-light">Độ tin cậy cao:</span>
+                        <span class="text-warning">{{ odds|selectattr('confidence', 'ge', 4)|list|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-light">Có khuyến nghị:</span>
+                        <span class="text-warning">{{ odds|selectattr('recommendation')|list|length }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chatbot Section -->
+            <div class="card bg-dark border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-robot me-2"></i>Kèo Sư AI</h6>
+                </div>
+                <div class="card-body text-center">
+                    <p class="text-light small mb-3">Hỗ trợ tư vấn kèo 24/7</p>
+                    <button class="btn btn-warning btn-sm" onclick="toggleChatbot()">
+                        <i class="fas fa-comments me-1"></i>Chat Ngay
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function toggleChatbot() {
+    const chatbotToggle = document.getElementById('chatbot-toggle');
+    const chatbotIframe = document.getElementById('chatbot-iframe');
+    
+    if (chatbotIframe.classList.contains('d-none')) {
+        chatbotIframe.classList.remove('d-none');
+        chatbotToggle.innerHTML = '<i class="fas fa-times fa-lg"></i>';
+    } else {
+        chatbotIframe.classList.add('d-none');
+        chatbotToggle.innerHTML = '<i class="fas fa-comments fa-lg"></i>';
+    }
+}
+</script>
+{% endblock %}

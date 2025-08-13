@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: {{ request.host_url }}sitemap.xml
+
+# Crawl-delay
+Crawl-delay: 1
+
+# Disallow admin areas
+Disallow: /admin/
+
+# Allow important pages
+Allow: /keo-thom
+Allow: /soi-keo
+Allow: /meo-cuoc
+Allow: /tin-tuc
+Allow: /lich-thi-dau
+Allow: /ty-so-truc-tiep
+Allow: /dai-ly-melbet
+Allow: /lien-he
+Allow: /bai-viet/
+Allow: /chuyen-muc/
+Allow: /search

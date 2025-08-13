@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <h1 class="text-warning">
+            <i class="fas fa-calendar me-2"></i>Lịch Thi Đấu Bóng Đá
+        </h1>
+        <p class="text-light">Lịch thi đấu các giải bóng đá hàng đầu thế giới</p>
+    </div>
+
+    <!-- Date Filter -->
+    <div class="card bg-dark border-warning mb-4">
+        <div class="card-body">
+            <form method="GET" class="row g-3 align-items-center">
+                <div class="col-auto">
+                    <label class="form-label text-warning">Chọn ngày:</label>
+                </div>
+                <div class="col-auto">
+                    <input type="date" class="form-control" name="date" value="{{ selected_date.strftime('%Y-%m-%d') }}">
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-warning">Xem lịch</button>
+                </div>
+                <div class="col-auto">
+                    <a href="{{ url_for('lich_thi_dau') }}" class="btn btn-outline-warning">Hôm nay</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Matches -->
+    {% if matches %}
+    <div class="row">
+        {% for match in matches %}
+        <div class="col-lg-6 mb-3">
+            <div class="card bg-dark border-secondary h-100">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-3">
+                        <span class="badge bg-warning text-dark">{{ match.league or 'Unknown League' }}</span>
+                        <small class="text-muted">{{ match.match_date.strftime('%H:%M') }}</small>
+                    </div>
+                    
+                    <div class="row align-items-center">
+                        <div class="col-4 text-center">
+                            <h6 class="text-warning mb-1">{{ match.home_team }}</h6>
+                            {% if match.status == 'finished' and match.home_score is not none %}
+                            <span class="badge bg-success fs-6">{{ match.home_score }}</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-4 text-center">
+                            {% if match.status == 'live' %}
+                            <span class="badge bg-danger blink">LIVE</span>
+                            {% elif match.status == 'finished' %}
+                            <span class="text-muted">FT</span>
+                            {% else %}
+                            <span class="text-muted">vs</span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="col-4 text-center">
+                            <h6 class="text-warning mb-1">{{ match.away_team }}</h6>
+                            {% if match.status == 'finished' and match.away_score is not none %}
+                            <span class="badge bg-success fs-6">{{ match.away_score }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if match.venue %}
+                    <div class="text-center mt-3">
+                        <small class="text-muted">
+                            <i class="fas fa-map-marker-alt me-1"></i>{{ match.venue }}
+                        </small>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="text-center mt-3">
+                        <div class="btn-group" role="group">
+                            <a href="{{ url_for('soi_keo') }}" class="btn btn-outline-warning btn-sm">Soi kèo</a>
+                            <a href="{{ url_for('keo_thom') }}" class="btn btn-outline-warning btn-sm">Xem kèo</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="card bg-dark border-secondary">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-calendar-times fa-3x text-warning mb-3"></i>
+            <h5 class="text-light">Không có trận đấu nào trong ngày {{ selected_date.strftime('%d/%m/%Y') }}</h5>
+            <p class="text-muted">Vui lòng chọn ngày khác để xem lịch thi đấu</p>
+            <a href="{{ url_for('lich_thi_dau') }}" class="btn btn-warning">Xem hôm nay</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- League Filter -->
+    <div class="card bg-dark border-warning mt-4">
+        <div class="card-header bg-warning text-dark">
+            <h6 class="mb-0"><i class="fas fa-trophy me-2"></i>Các Giải Đấu Phổ Biến</h6>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 mb-2">
+                    <a href="{{ url_for('lich_thi_dau', league='Premier League') }}" class="btn btn-outline-warning btn-sm w-100">Premier League</a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a href="{{ url_for('lich_thi_dau', league='La Liga') }}" class="btn btn-outline-warning btn-sm w-100">La Liga</a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a href="{{ url_for('lich_thi_dau', league='Serie A') }}" class="btn btn-outline-warning btn-sm w-100">Serie A</a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a href="{{ url_for('lich_thi_dau', league='Bundesliga') }}" class="btn btn-outline-warning btn-sm w-100">Bundesliga</a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a href="{{ url_for('lich_thi_dau', league='Champions League') }}" class="btn btn-outline-warning btn-sm w-100">Champions League</a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a href="{{ url_for('lich_thi_dau', league='V-League') }}" class="btn btn-outline-warning btn-sm w-100">V-League</a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a href="{{ url_for('lich_thi_dau', league='World Cup') }}" class="btn btn-outline-warning btn-sm w-100">World Cup</a>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <a href="{{ url_for('lich_thi_dau') }}" class="btn btn-warning btn-sm w-100">Tất cả</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0.3; }
+}
+
+.blink {
+    animation: blink 1s infinite;
+}
+</style>
+{% endblock %}

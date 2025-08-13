@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Page Header -->
+            <div class="page-header mb-4">
+                <h1 class="text-warning">
+                    <i class="fas fa-envelope me-2"></i>Liên Hệ Với Chúng Tôi
+                </h1>
+                <p class="text-light">Chúng tôi luôn sẵn sàng hỗ trợ và tư vấn cho bạn</p>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="card bg-dark border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="fas fa-paper-plane me-2"></i>Gửi Tin Nhắn</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                {{ form.name.label(class="form-label text-warning") }}
+                                {{ form.name(class="form-control") }}
+                                {% if form.name.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.name.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                {{ form.email.label(class="form-label text-warning") }}
+                                {{ form.email(class="form-control") }}
+                                {% if form.email.errors %}
+                                    <div class="text-danger small">
+                                        {% for error in form.email.errors %}
+                                            <div>{{ error }}</div>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            {{ form.subject.label(class="form-label text-warning") }}
+                            {{ form.subject(class="form-control") }}
+                            {% if form.subject.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.subject.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            {{ form.message.label(class="form-label text-warning") }}
+                            {{ form.message(class="form-control", rows="5") }}
+                            {% if form.message.errors %}
+                                <div class="text-danger small">
+                                    {% for error in form.message.errors %}
+                                        <div>{{ error }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="text-center">
+                            {{ form.submit(class="btn btn-warning btn-lg px-4") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Alternative Contact -->
+            <div class="card bg-dark border-secondary">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Hoặc Liên Hệ Trực Tiếp</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-envelope text-warning fa-lg me-3"></i>
+                                <div>
+                                    <strong class="text-light">Email</strong>
+                                    <div class="text-muted">contact@keosu.com</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-phone text-warning fa-lg me-3"></i>
+                                <div>
+                                    <strong class="text-light">Hotline</strong>
+                                    <div class="text-muted">+84 123 456 789</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-telegram text-warning fa-lg me-3"></i>
+                                <div>
+                                    <strong class="text-light">Telegram</strong>
+                                    <div class="text-muted">@keosu_support</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="d-flex align-items-center">
+                                <i class="fab fa-facebook text-warning fa-lg me-3"></i>
+                                <div>
+                                    <strong class="text-light">Facebook</strong>
+                                    <div class="text-muted">fb.com/keosu</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Contact Info -->
+            <div class="card bg-dark border-warning mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0"><i class="fas fa-info-circle me-2"></i>Thông Tin Liên Hệ</h6>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h6 class="text-warning">Địa chỉ văn phòng</h6>
+                        <p class="text-light small mb-0">123 Đường ABC, Quận 1, TP.HCM, Việt Nam</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-warning">Giờ làm việc</h6>
+                        <p class="text-light small mb-0">Thứ 2 - Thứ 6: 8:00 - 18:00<br>Thứ 7 - CN: 9:00 - 17:00</p>
+                    </div>
+                    <div class="mb-3">
+                        <h6 class="text-warning">Hỗ trợ khẩn cấp</h6>
+                        <p class="text-light small mb-0">Hotline 24/7 cho các vấn đề quan trọng</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Services -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Dịch Vụ Hỗ Trợ</h6>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-chart-line text-warning me-2"></i>
+                            <span class="text-light">Tư vấn kèo bóng đá</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-users text-warning me-2"></i>
+                            <span class="text-light">Hỗ trợ đại lý MelBet</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-laptop-code text-warning me-2"></i>
+                            <span class="text-light">Hỗ trợ kỹ thuật website</span>
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-handshake text-warning me-2"></i>
+                            <span class="text-light">Hợp tác kinh doanh</span>
+                        </li>
+                        <li class="mb-0">
+                            <i class="fas fa-newspaper text-warning me-2"></i>
+                            <span class="text-light">Đóng góp nội dung</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- FAQ Quick Links -->
+            <div class="card bg-dark border-secondary mb-4">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0">Câu Hỏi Thường Gặp</h6>
+                </div>
+                <div class="card-body">
+                    <div class="accordion accordion-dark" id="faqAccordion">
+                        <div class="accordion-item bg-dark border-secondary">
+                            <h6 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light border-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                                    Làm sao để có kèo chính xác?
+                                </button>
+                            </h6>
+                            <div id="faq1" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    Chúng tôi phân tích dựa trên thống kê, form đội bóng, lịch sử đối đầu và nhiều yếu tố khác để đưa ra dự đoán chính xác nhất.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item bg-dark border-secondary">
+                            <h6 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light border-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                                    Tại sao chọn MelBet?
+                                </button>
+                            </h6>
+                            <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    MelBet là nhà cái uy tín với giấy phép hợp pháp, tỷ lệ kèo cạnh tranh, thanh toán nhanh chóng và hỗ trợ 24/7.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item bg-dark border-secondary">
+                            <h6 class="accordion-header">
+                                <button class="accordion-button collapsed bg-dark text-light border-0" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                                    Có hỗ trợ người mới không?
+                                </button>
+                            </h6>
+                            <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                                <div class="accordion-body text-light">
+                                    Có, chúng tôi có đội ngũ tư vấn chuyên nghiệp sẵn sàng hướng dẫn người mới từ A-Z.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Social Media -->
+            <div class="card bg-dark border-warning">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="mb-0">Theo Dõi Chúng Tôi</h6>
+                </div>
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-center gap-3">
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="fab fa-facebook-f fa-lg"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-info btn-sm">
+                            <i class="fab fa-twitter fa-lg"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-primary btn-sm">
+                            <i class="fab fa-telegram fa-lg"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-danger btn-sm">
+                            <i class="fab fa-youtube fa-lg"></i>
+                        </a>
+                        <a href="#" class="btn btn-outline-success btn-sm">
+                            <i class="fab fa-whatsapp fa-lg"></i>
+                        </a>
+                    </div>
+                    <p class="text-light small mt-3 mb-0">Nhận thông báo tin tức và kèo mới nhất</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

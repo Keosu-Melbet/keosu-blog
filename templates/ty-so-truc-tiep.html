@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <!-- Page Header -->
+    <div class="page-header mb-4">
+        <h1 class="text-warning">
+            <i class="fas fa-futbol me-2"></i>Tỷ Số Trực Tiếp
+        </h1>
+        <p class="text-light">Theo dõi kết quả bóng đá trực tiếp từ khắp thế giới</p>
+    </div>
+
+    <!-- Live Score Widget -->
+    <div class="card bg-dark border-warning mb-4">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="fas fa-broadcast-tower me-2"></i>Kết Quả Trực Tiếp</h5>
+        </div>
+        <div class="card-body p-0">
+            <!-- Flashscore.vn iframe -->
+            <iframe src="https://www.flashscore.vn/" 
+                    width="100%" 
+                    height="600" 
+                    frameborder="0" 
+                    style="min-height: 600px;">
+                <p class="text-center text-light p-4">
+                    Trình duyệt của bạn không hỗ trợ iframe. 
+                    <a href="https://www.flashscore.vn/" target="_blank" class="text-warning">Nhấp vào đây để xem tỷ số trực tiếp</a>
+                </p>
+            </iframe>
+        </div>
+    </div>
+
+    <!-- Alternative Sources -->
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0"><i class="fas fa-external-link-alt me-2"></i>Nguồn Khác</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="https://www.7m.com.vn/" target="_blank" class="btn btn-outline-warning">
+                            <i class="fas fa-globe me-2"></i>7M Sports
+                        </a>
+                        <a href="https://www.goal.com/vi" target="_blank" class="btn btn-outline-warning">
+                            <i class="fas fa-newspaper me-2"></i>Goal.com
+                        </a>
+                        <a href="https://www.livescore.com/" target="_blank" class="btn btn-outline-warning">
+                            <i class="fas fa-chart-line me-2"></i>LiveScore
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="card bg-dark border-secondary">
+                <div class="card-header">
+                    <h6 class="text-warning mb-0"><i class="fas fa-clock me-2"></i>Cập Nhật</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="spinner-grow text-warning spinner-grow-sm me-2" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                        <span class="text-light">Tự động cập nhật mỗi 30 giây</span>
+                    </div>
+                    <p class="text-muted small mb-3">
+                        Tỷ số được cập nhật trực tiếp từ các nguồn tin cậy. 
+                        Thời gian có thể chậm 1-2 phút so với thực tế.
+                    </p>
+                    <button class="btn btn-warning btn-sm" onclick="refreshLiveScore()">
+                        <i class="fas fa-sync-alt me-1"></i>Làm mới
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Today's Matches -->
+    <div class="card bg-dark border-warning">
+        <div class="card-header bg-warning text-dark">
+            <h5 class="mb-0"><i class="fas fa-list me-2"></i>Trận Đấu Hôm Nay</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-secondary">
+                        <div class="card-body text-center">
+                            <small class="text-warning d-block">Premier League • 21:00</small>
+                            <h6 class="text-light mt-2 mb-1">Manchester United vs Arsenal</h6>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <span class="badge bg-danger me-2">LIVE</span>
+                                <span class="text-warning fw-bold">2 - 1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-secondary">
+                        <div class="card-body text-center">
+                            <small class="text-warning d-block">La Liga • 22:30</small>
+                            <h6 class="text-light mt-2 mb-1">Real Madrid vs Barcelona</h6>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <span class="badge bg-success me-2">FT</span>
+                                <span class="text-warning fw-bold">3 - 1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card bg-secondary">
+                        <div class="card-body text-center">
+                            <small class="text-warning d-block">Serie A • 23:45</small>
+                            <h6 class="text-light mt-2 mb-1">Juventus vs AC Milan</h6>
+                            <div class="d-flex justify-content-center align-items-center">
+                                <span class="badge bg-warning text-dark me-2">HT</span>
+                                <span class="text-warning fw-bold">1 - 0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <a href="{{ url_for('lich_thi_dau') }}" class="btn btn-outline-warning">
+                    <i class="fas fa-calendar me-2"></i>Xem tất cả trận đấu
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features -->
+    <div class="row mt-4">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-dark border-secondary text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-bolt text-warning fa-2x mb-3"></i>
+                    <h6 class="text-warning">Cập Nhật Nhanh</h6>
+                    <p class="text-light small">Tỷ số cập nhật realtime từ sân đấu</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-dark border-secondary text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-globe text-warning fa-2x mb-3"></i>
+                    <h6 class="text-warning">Toàn Cầu</h6>
+                    <p class="text-light small">Theo dõi các giải đấu trên thế giới</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-dark border-secondary text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-chart-bar text-warning fa-2x mb-3"></i>
+                    <h6 class="text-warning">Thống Kê</h6>
+                    <p class="text-light small">Thông tin chi tiết về từng trận đấu</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="card bg-dark border-secondary text-center h-100">
+                <div class="card-body">
+                    <i class="fas fa-mobile-alt text-warning fa-2x mb-3"></i>
+                    <h6 class="text-warning">Mobile Friendly</h6>
+                    <p class="text-light small">Xem trên mọi thiết bị dễ dàng</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function refreshLiveScore() {
+    // Reload the iframe
+    const iframe = document.querySelector('iframe');
+    if (iframe) {
+        iframe.src = iframe.src;
+    }
+    
+    // Show loading indicator
+    const button = event.target;
+    const originalText = button.innerHTML;
+    button.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Đang tải...';
+    button.disabled = true;
+    
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+    }, 2000);
+}
+
+// Auto refresh every 30 seconds
+setInterval(() => {
+    const iframe = document.querySelector('iframe');
+    if (iframe && document.visibilityState === 'visible') {
+        iframe.src = iframe.src;
+    }
+}, 30000);
+</script>
+{% endblock %}

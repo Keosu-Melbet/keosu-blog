@@ -1,0 +1,431 @@
+{% extends "base.html" %}
+
+{% block title %}Quản Lý Bài Viết - Admin | Kèo Sư{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-5">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h1 class="h3 mb-1">
+                                <i class="fas fa-newspaper me-2"></i>Quản Lý Bài Viết
+                            </h1>
+                            <p class="mb-0">Tổng cộng có {{ articles.total }} bài viết</p>
+                        </div>
+                        <div>
+                            <a href="{{ url_for('create_article') }}" class="btn btn-warning">
+                                <i class="fas fa-plus me-1"></i>Tạo Bài Viết Mới
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filter and Search -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" class="row g-3 align-items-end">
+                        <div class="col-md-4">
+                            <label class="form-label">Tìm kiếm</label>
+                            <input type="text" class="form-control" name="search" 
+                                   value="{{ request.args.get('search', '') }}" 
+                                   placeholder="Tìm theo tiêu đề...">
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label">Chuyên mục</label>
+                            <select class="form-select" name="category">
+                                <option value="">Tất cả chuyên mục</option>
+                                <option value="keo-thom" {{ 'selected' if request.args.get('category') == 'keo-thom' }}>Kèo thơm</option>
+                                <option value="soi-keo" {{ 'selected' if request.args.get('category') == 'soi-keo' }}>Soi kèo</option>
+                                <option value="meo-cuoc" {{ 'selected' if request.args.get('category') == 'meo-cuoc' }}>Mẹo cược</option>
+                                <option value="tin-tuc" {{ 'selected' if request.args.get('category') == 'tin-tuc' }}>Tin tức</option>
+                                <option value="lich-thi-dau" {{ 'selected' if request.args.get('category') == 'lich-thi-dau' }}>Lịch thi đấu</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">Sắp xếp</label>
+                            <select class="form-select" name="sort">
+                                <option value="newest" {{ 'selected' if request.args.get('sort') == 'newest' }}>Mới nhất</option>
+                                <option value="oldest" {{ 'selected' if request.args.get('sort') == 'oldest' }}>Cũ nhất</option>
+                                <option value="most_viewed" {{ 'selected' if request.args.get('sort') == 'most_viewed' }}>Xem nhiều nhất</option>
+                                <option value="featured" {{ 'selected' if request.args.get('sort') == 'featured' }}>Nổi bật</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <button type="submit" class="btn btn-primary me-2">
+                                <i class="fas fa-search me-1"></i>Lọc
+                            </button>
+                            <a href="{{ url_for('admin_articles') }}" class="btn btn-outline-secondary">
+                                <i class="fas fa-times me-1"></i>Xóa bộ lọc
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Articles Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-list me-2"></i>Danh Sách Bài Viết
+                        <span class="badge bg-secondary ms-2">Trang {{ articles.page }}/{{ articles.pages }}</span>
+                    </h5>
+                </div>
+                <div class="card-body p-0">
+                    {% if articles.items %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th width="5%">
+                                        <input type="checkbox" class="form-check-input" id="selectAll">
+                                    </th>
+                                    <th width="40%">Bài viết</th>
+                                    <th width="15%">Chuyên mục</th>
+                                    <th width="10%">Tác giả</th>
+                                    <th width="10%">Lượt xem</th>
+                                    <th width="10%">Ngày tạo</th>
+                                    <th width="10%">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for article in articles.items %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" class="form-check-input article-checkbox" value="{{ article.id }}">
+                                    </td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            {% if article.image_url %}
+                                            <img src="{{ article.image_url }}" class="rounded me-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Thumbnail">
+                                            {% else %}
+                                            <div class="bg-secondary rounded d-flex align-items-center justify-content-center me-3 text-white" style="width: 60px; height: 60px;">
+                                                <i class="fas fa-image"></i>
+                                            </div>
+                                            {% endif %}
+                                            <div class="flex-grow-1">
+                                                <h6 class="mb-1">
+                                                    <a href="{{ url_for('article_detail', category=article.category, slug=article.slug) }}" 
+                                                       class="text-decoration-none" target="_blank">
+                                                        {{ article.title }}
+                                                    </a>
+                                                    {% if article.featured %}
+                                                    <i class="fas fa-star text-warning ms-1" title="Bài viết nổi bật"></i>
+                                                    {% endif %}
+                                                </h6>
+                                                {% if article.summary %}
+                                                <p class="text-muted small mb-0">{{ article.summary[:100] }}...</p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        {% if article.category == 'keo-thom' %}
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-fire me-1"></i>Kèo thơm
+                                            </span>
+                                        {% elif article.category == 'soi-keo' %}
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-search me-1"></i>Soi kèo
+                                            </span>
+                                        {% elif article.category == 'meo-cuoc' %}
+                                            <span class="badge bg-warning text-dark">
+                                                <i class="fas fa-lightbulb me-1"></i>Mẹo cược
+                                            </span>
+                                        {% elif article.category == 'tin-tuc' %}
+                                            <span class="badge bg-secondary">
+                                                <i class="fas fa-newspaper me-1"></i>Tin tức
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-primary">
+                                                {{ article.category|title }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">{{ article.author }}</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-light text-dark">
+                                            <i class="fas fa-eye me-1"></i>{{ article.views }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <small class="text-muted">
+                                            {{ article.created_at.strftime('%d/%m/%Y') }}<br>
+                                            {{ article.created_at.strftime('%H:%M') }}
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm" role="group">
+                                            <a href="{{ url_for('article_detail', category=article.category, slug=article.slug) }}" 
+                                               class="btn btn-outline-primary" title="Xem bài viết" target="_blank">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-outline-warning" title="Chỉnh sửa" 
+                                                    onclick="editArticle({{ article.id }})">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger" title="Xóa" 
+                                                    onclick="deleteArticle({{ article.id }}, '{{ article.title }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-newspaper text-muted" style="font-size: 4rem;"></i>
+                        <h4 class="mt-3">Không có bài viết nào</h4>
+                        <p class="text-muted">Hãy tạo bài viết đầu tiên của bạn!</p>
+                        <a href="{{ url_for('create_article') }}" class="btn btn-primary">
+                            <i class="fas fa-plus me-1"></i>Tạo Bài Viết Mới
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if articles.items %}
+                <div class="card-footer">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center">
+                                <button type="button" class="btn btn-outline-danger btn-sm me-2" 
+                                        id="bulkDeleteBtn" disabled onclick="bulkDelete()">
+                                    <i class="fas fa-trash me-1"></i>Xóa đã chọn
+                                </button>
+                                <span class="text-muted small" id="selectedCount">0 mục được chọn</span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <!-- Pagination -->
+                            {% if articles.pages > 1 %}
+                            <nav aria-label="Articles pagination">
+                                <ul class="pagination pagination-sm justify-content-end mb-0">
+                                    {% if articles.has_prev %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('admin_articles', page=articles.prev_num, **request.args) }}">
+                                            <i class="fas fa-chevron-left"></i>
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                    
+                                    {% for page_num in articles.iter_pages() %}
+                                        {% if page_num %}
+                                            {% if page_num != articles.page %}
+                                            <li class="page-item">
+                                                <a class="page-link" href="{{ url_for('admin_articles', page=page_num, **request.args) }}">{{ page_num }}</a>
+                                            </li>
+                                            {% else %}
+                                            <li class="page-item active">
+                                                <span class="page-link">{{ page_num }}</span>
+                                            </li>
+                                            {% endif %}
+                                        {% else %}
+                                        <li class="page-item disabled">
+                                            <span class="page-link">...</span>
+                                        </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    
+                                    {% if articles.has_next %}
+                                    <li class="page-item">
+                                        <a class="page-link" href="{{ url_for('admin_articles', page=articles.next_num, **request.args) }}">
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                    {% endif %}
+                                </ul>
+                            </nav>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-newspaper mb-2" style="font-size: 2rem;"></i>
+                    <h4>{{ articles.total }}</h4>
+                    <small>Tổng bài viết</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark">
+                <div class="card-body text-center">
+                    <i class="fas fa-fire mb-2" style="font-size: 2rem;"></i>
+                    <h4>{{ featured_count if featured_count is defined else 0 }}</h4>
+                    <small>Bài nổi bật</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-eye mb-2" style="font-size: 2rem;"></i>
+                    <h4>{{ total_views if total_views is defined else 0 }}</h4>
+                    <small>Tổng lượt xem</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body text-center">
+                    <i class="fas fa-calendar mb-2" style="font-size: 2rem;"></i>
+                    <h4>{{ today_articles if today_articles is defined else 0 }}</h4>
+                    <small>Bài viết hôm nay</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-exclamation-triangle text-danger me-2"></i>Xác Nhận Xóa
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <p>Bạn có chắc chắn muốn xóa bài viết:</p>
+                <p><strong id="articleTitle"></strong></p>
+                <p class="text-danger small">
+                    <i class="fas fa-warning me-1"></i>Hành động này không thể hoàn tác!
+                </p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-danger" id="confirmDelete">
+                    <i class="fas fa-trash me-1"></i>Xóa Bài Viết
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+let articleToDelete = null;
+
+// Select all functionality
+document.getElementById('selectAll').addEventListener('change', function() {
+    const checkboxes = document.querySelectorAll('.article-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = this.checked;
+    });
+    updateBulkActions();
+});
+
+// Individual checkbox functionality
+document.querySelectorAll('.article-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', updateBulkActions);
+});
+
+// Update bulk actions
+function updateBulkActions() {
+    const checkboxes = document.querySelectorAll('.article-checkbox:checked');
+    const bulkDeleteBtn = document.getElementById('bulkDeleteBtn');
+    const selectedCount = document.getElementById('selectedCount');
+    
+    const count = checkboxes.length;
+    selectedCount.textContent = `${count} mục được chọn`;
+    bulkDeleteBtn.disabled = count === 0;
+}
+
+// Edit article
+function editArticle(articleId) {
+    // This would typically redirect to an edit page
+    // For now, show a placeholder
+    alert(`Chức năng chỉnh sửa bài viết ID: ${articleId} sẽ được phát triển trong phiên bản tiếp theo.`);
+}
+
+// Delete single article
+function deleteArticle(articleId, title) {
+    articleToDelete = articleId;
+    document.getElementById('articleTitle').textContent = title;
+    new bootstrap.Modal(document.getElementById('deleteModal')).show();
+}
+
+// Confirm delete
+document.getElementById('confirmDelete').addEventListener('click', function() {
+    if (articleToDelete) {
+        // This would make an AJAX request to delete the article
+        // For now, show a placeholder
+        alert(`Xóa bài viết ID: ${articleToDelete}`);
+        location.reload();
+    }
+});
+
+// Bulk delete
+function bulkDelete() {
+    const checkboxes = document.querySelectorAll('.article-checkbox:checked');
+    const ids = Array.from(checkboxes).map(cb => cb.value);
+    
+    if (ids.length > 0) {
+        if (confirm(`Bạn có chắc chắn muốn xóa ${ids.length} bài viết đã chọn?`)) {
+            // This would make an AJAX request to delete multiple articles
+            alert(`Xóa ${ids.length} bài viết: ${ids.join(', ')}`);
+            location.reload();
+        }
+    }
+}
+
+// Auto-submit filter form on change
+document.querySelectorAll('select[name="category"], select[name="sort"]').forEach(select => {
+    select.addEventListener('change', function() {
+        this.form.submit();
+    });
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', function(e) {
+    // Ctrl/Cmd + N = New article
+    if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        window.location.href = '{{ url_for("create_article") }}';
+    }
+    
+    // Delete key = Delete selected
+    if (e.key === 'Delete') {
+        const checkedBoxes = document.querySelectorAll('.article-checkbox:checked');
+        if (checkedBoxes.length > 0) {
+            bulkDelete();
+        }
+    }
+});
+
+// Initialize tooltips
+var tooltipTriggerList = [].slice.call(document.querySelectorAll('[title]'));
+var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+});
+</script>
+{% endblock %}
