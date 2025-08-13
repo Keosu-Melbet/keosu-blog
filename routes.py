@@ -282,41 +282,32 @@ def manage_articles():
 
 @app.route('/search')
 def search():
-    query = request.args.get('q', '').strip()
-    category_id = request.args.get('category')
+    """Search articles"""
+    query = request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
-
-    filters = [Article.published == True]
-
+    
     if query:
-        filters.append(or_(
-            Article.title.ilike(f'%{query}%'),
-            Article.content.ilike(f'%{query}%')
-        ))
-
-    if category_id:
-        try:
-            filters.append(Article.category_id == int(category_id))
-        except ValueError:
-            pass
-
-    articles = Article.query.filter(*filters)\
-        .order_by(desc(Article.created_at))\
-        .paginate(page=page, per_page=10, error_out=False)
-
-    categories = Category.query.all()
-
+        articles = Article.query.filter(
+            or_(
+                Article.title.contains(query),
+                Article.content.contains(query)
+            ),
+            Article.published == True
+        ).order_by(desc(Article.created_at))\
+         .paginate(page=page, per_page=10, error_out=False)
+    else:
+        articles = Article.query.filter_by(published=False).paginate(page=1, per_page=0, error_out=False)
+    
     meta_tags = generate_meta_tags(
         title=f"Tìm kiếm: {query} | Kèo Sư" if query else "Tìm kiếm | Kèo Sư",
         description=f"Kết quả tìm kiếm cho '{query}'" if query else "Tìm kiếm bài viết",
         keywords=f"tìm kiếm, {query}" if query else "tìm kiếm"
     )
-
-    return render_template('search.html',
-                           articles=articles,
-                           query=query,
-                           categories=categories,
-                           meta_tags=meta_tags)
+    
+    return render_template('search.html', 
+                         articles=articles, 
+                         query=query,
+                         meta_tags=meta_tags)
 
 # SEO routes
 @app.route('/sitemap.xml')
