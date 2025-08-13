@@ -1,13 +1,11 @@
-from flask import render_template, request, redirect, url_for, flash, jsonify, make_response
-from app import app, db
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, make_response
+from extensions import db
 from models import Article, Category, BettingOdd, Match
 from forms import ArticleForm, ContactForm, SearchForm
 from seo_utils import generate_meta_tags
 from datetime import datetime, timedelta
 from sqlalchemy import or_, desc
 import xml.etree.ElementTree as ET
-from flask import Blueprint, render_template, redirect, url_for
-from sqlalchemy import desc
 
 bp = Blueprint('main', __name__)
 
