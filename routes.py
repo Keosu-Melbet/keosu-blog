@@ -439,3 +439,27 @@ def internal_error(error):
         keywords="500, lỗi hệ thống"
     )
     return render_template('500.html', meta_tags=meta_tags), 500
+
+@bp.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        user = User.query.filter_by(username=username).first()
+        if user and user.check_password(password) and user.is_admin:
+            session['admin_logged_in'] = True
+            return redirect(url_for('main.admin_dashboard'))
+        else:
+            flash('Sai thông tin đăng nhập hoặc không có quyền truy cập.')
+    return render_template('admin/login.html')
+    
+@bp.route('/admin/dashboard')
+def admin_dashboard():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('main.admin_login'))
+    
+    articles = Article.query.order_by(desc(Article.created_at)).all()
+    return render_template('admin/dashboard.html', articles=articles)
+
+
+
