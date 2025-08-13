@@ -8,17 +8,6 @@ from datetime import datetime
 from config import Config
 from routes import bp as main_bp
 
-app.register_blueprint(main_bp)
-
-
-# Set up logging
-logging.basicConfig(level=logging.DEBUG)
-
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
-
 # Create the app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-key-change-in-production")
@@ -27,8 +16,19 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 # Configure the database
 app.config.from_object(Config)
 
-# Initialize the app with the extension
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+
+# SQLAlchemy setup
+class Base(DeclarativeBase):
+    pass
+
+db = SQLAlchemy(model_class=Base)
 db.init_app(app)
+
+# Register blueprint AFTER app is created
+app.register_blueprint(main_bp)
+
 
 # Template globals
 @app.template_global()
@@ -67,3 +67,7 @@ with app.app_context():
     except Exception as e:
         db.session.rollback()
         app.logger.error(f"Error creating default categories: {e}")
+        
+ # Optional: run app if this is the main file
+if __name__ == "__main__":
+    app.run(debug=True) 
