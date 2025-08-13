@@ -73,14 +73,14 @@
           </button>
           <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('keo_thom') }}">Kèo thơm</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('lich_thi_dau') }}">Lịch thi đấu</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('ty_so_truc_tiep') }}">Tỷ số trực tiếp</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('soi_keo') }}">Soi kèo</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('meo_cuoc') }}">Mẹo cược</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('tin_tuc') }}">Tin tức</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('dai_ly_melbet') }}">Đại lý MelBet</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('lien_he') }}">Liên hệ</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_page', slug='keo-thom') }}">Kèo thơm</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_page', slug='lich-thi-dau') }}">Lịch thi đấu</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_page', slug='ty-so-truc-tiep') }}">Tỷ số trực tiếp</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_page', slug='soi-keo') }}">Soi kèo</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_page', slug='meo-cuoc') }}">Mẹo cược</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_page', slug='tin-tuc') }}">Tin tức</a></li>
+              <li class="nav-item"><a class="nav-link" href="/dai-ly-melbet">Đại lý MelBet</a></li>
+              <li class="nav-item"><a class="nav-link" href="/lien-he">Liên hệ</a></li>
             </ul>
             <form class="d-flex" action="{{ url_for('search') }}" method="GET">
               <input class="form-control me-2" type="search" name="q" placeholder="Tìm kiếm..." value="{{ request.args.get('q', '') }}" />
@@ -124,10 +124,10 @@
           <div class="col-lg-2 col-md-6 mb-4">
             <h6 class="text-warning">Dịch vụ</h6>
             <ul class="list-unstyled">
-              <li><a href="{{ url_for('lich_thi_dau') }}" class="text-light">Lịch thi đấu</a></li>
-              <li><a href="{{ url_for('ty_so_truc_tiep') }}" class="text-light">Tỷ số trực tiếp</a></li>
-              <li><a href="{{ url_for('dai_ly_melbet') }}" class="text-light">Đại lý MelBet</a></li>
-              <li><a href="{{ url_for('lien_he') }}" class="text-light">Liên hệ</a></li>
+              <li><a href="{{ url_for('category_page', slug='lich-thi-dau') }}" class="text-light">Lịch thi đấu</a></li>
+              <li><a href="{{ url_for('category_page', slug='ty-so-truc-tiep') }}" class="text-light">Tỷ số trực tiếp</a></li>
+              <li><a href="/dai-ly-melbet" class="text-light">Đại lý MelBet</a></li>
+              <li><a href="/lien-he" class="text-light">Liên hệ</a></li>
             </ul>
           </div>
           <div class="col-lg-4 col-md-6 mb-4">
