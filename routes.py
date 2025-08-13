@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 bp = Blueprint('main', __name__)
 
 @bp.route('/<slug>')
-def category_articles(slug):
+def category_articles_en(slug):
     category = Category.query.filter_by(slug=slug).first_or_404()
     articles = Article.query.filter_by(category_id=category.id, published=True).order_by(desc(Article.created_at)).all()
 
@@ -263,7 +263,7 @@ def article_detail(slug):
 
 @app.route('/chuyen-muc/<slug>')
 @app.route('/chuyen-muc/<slug>/<int:page>')
-def category_articles(slug, page=1):
+def category_articles_vn(slug, page=1):
     """Category articles page"""
     category = Category.query.filter_by(slug=slug).first_or_404()
     
