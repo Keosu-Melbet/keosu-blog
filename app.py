@@ -69,3 +69,6 @@ with app.app_context():
     except Exception as e:
         db.session.rollback()
         app.logger.error(f"Error creating default categories: {e}")
+
+if __name__ == '__main__':
+    app.run(debug=True)
