@@ -1,8 +1,11 @@
 from core import db
 from flask_login import UserMixin
 from datetime import datetime
-from sqlalchemy import func
 import re
+
+# -----------------------------
+# 📁 Category Model
+# -----------------------------
 
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
