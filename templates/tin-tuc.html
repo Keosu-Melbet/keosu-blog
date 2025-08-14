@@ -101,7 +101,9 @@
                     <i class="fas fa-newspaper fa-3x text-warning mb-3"></i>
                     <h5 class="text-light">Chưa có tin tức nào</h5>
                     <p class="text-muted">Vui lòng quay lại sau để xem tin tức mới nhất</p>
+                {% if request.path.startswith('/admin') %}
                     <a href="{{ url_for('create_article') }}" class="btn btn-warning">Tạo bài viết</a>
+                {% endif %}
                 </div>
             </div>
             {% endif %}
