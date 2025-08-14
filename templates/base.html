@@ -1,177 +1,104 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>{% if meta_tags %}{{ meta_tags.title }}{% else %}Kèo Sư - Website Kèo Bóng Đá Chuyên Nghiệp{% endif %}</title>
-    <meta name="description" content="{% if meta_tags %}{{ meta_tags.description }}{% else %}Kèo Sư cung cấp tỷ lệ kèo, soi kèo, mẹo cược bóng đá chính xác. Đối tác chính thức MelBet Việt Nam.{% endif %}" />
-    {% if meta_tags and meta_tags.keywords %}
-    <meta name="keywords" content="{{ meta_tags.keywords }}" />
-    {% endif %}
-    <meta property="og:title" content="{% if meta_tags %}{{ meta_tags.title }}{% else %}Kèo Sư{% endif %}" />
-    <meta property="og:description" content="{% if meta_tags %}{{ meta_tags.description }}{% else %}Website kèo bóng đá chuyên nghiệp{% endif %}" />
-    <meta property="og:image" content="{{ url_for('static', filename='images/logo.svg', _external=True) }}" />
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="Kèo Sư" />
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo.svg') }}" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
-    {% block head %}{% endblock %}
-    <!-- Banner Carousel -->
-<div class="container">
-  <div id="melbetBannerCarousel" class="carousel slide my-4" data-bs-ride="carousel" data-bs-interval="5000">
-    
-    <!-- Indicators -->
-    <div class="carousel-indicators">
-      <button type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-      <button type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
-      <button type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
-    </div>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% if meta_tags %}{{ meta_tags.title }}{% else %}Kèo Sư - Website Kèo Bóng Đá Chuyên Nghiệp{% endif %}</title>
+  <meta name="description" content="{% if meta_tags %}{{ meta_tags.description }}{% else %}Kèo Sư cung cấp tỷ lệ kèo, soi kèo, mẹo cược bóng đá chính xác. Đối tác chính thức MelBet Việt Nam.{% endif %}" />
+  {% if meta_tags and meta_tags.keywords %}
+  <meta name="keywords" content="{{ meta_tags.keywords }}" />
+  {% endif %}
+  <meta property="og:title" content="{% if meta_tags %}{{ meta_tags.title }}{% else %}Kèo Sư{% endif %}" />
+  <meta property="og:description" content="{% if meta_tags %}{{ meta_tags.description }}{% else %}Website kèo bóng đá chuyên nghiệp{% endif %}" />
+  <meta property="og:image" content="{{ url_for('static', filename='images/logo.svg', _external=True) }}" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Kèo Sư" />
+  <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo.svg') }}" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  {% block head %}{% endblock %}
+</head>
+<body>
 
-    <!-- Slides -->
-    <div class="carousel-inner text-center">
-      <div class="carousel-item active">
-        <iframe scrolling="no" frameborder="0" style="width: 100%; height: 90px; border: none;" src="https://refpa11244.com/I?tag=d_4647185m_63177c_&site=4647185&ad=63177"></iframe>
+  <!-- Banner Carousel -->
+  <div class="container">
+    <div id="melbetBannerCarousel" class="carousel slide my-4" data-bs-ride="carousel" data-bs-interval="5000">
+      <div class="carousel-indicators">
+        <button type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide-to="2" aria-label="Slide 3"></button>
       </div>
-      <div class="carousel-item">
-        <iframe scrolling="no" frameborder="0" style="width: 100%; height: 90px; border: none;" src="https://refpa11244.com/I?tag=d_4647185m_62931c_&site=4647185&ad=62931"></iframe>
-      </div>
-      <div class="carousel-item">
-        <iframe scrolling="no" frameborder="0" style="width: 100%; height: 90px; border: none;" src="https://refpa11244.com/I?tag=d_4647185m_18643c_&site=4647185&ad=18643"></iframe>
-      </div>
-    </div>
-
-    <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon"></span>
-    </button>
-  </div>
-
-  <!-- CTA Buttons -->
-  <div class="text-center mb-4 d-flex flex-wrap justify-content-center gap-3">
-    <a href="https://refpa3665.com/L?tag=d_4647185m_18643c_&site=4647185&ad=18643" class="btn btn-warning btn-sm" target="_blank">🎁 Đăng Ký Người Chơi</a>
-    <a href="https://refpa3665.com/L?tag=d_4647185m_18645c_&site=4647185&ad=18645" class="btn btn-outline-light btn-sm" target="_blank">💼 Đăng Ký Đại Lý</a>
-    <a href="https://keo-su-mel-bet.onrender.com/" class="btn btn-outline-secondary btn-sm" target="_blank">🔄 Truy cập Vòng quay may mắn Kèo Sư</a>
-  </div>
-</div>
-
-  </head>
-  <body>
-    <header class="header">
-      <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-          <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
-            <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Kèo Sư" width="40" height="40" class="me-2" />
-            <span class="brand-text">Kèo Sư</span>
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav me-auto">
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_articles', slug='keo-thom') }}">Kèo thơm</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_articles', slug='lich-thi-dau') }}">Lịch thi đấu</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_articles', slug='ty-so-truc-tiep') }}">Tỷ số trực tiếp</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_articles', slug='soi-keo') }}">Soi kèo</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_articles', slug='meo-cuoc') }}">Mẹo cược</a></li>
-              <li class="nav-item"><a class="nav-link" href="{{ url_for('category_articles', slug='tin-tuc') }}">Tin tức</a></li>
-              <li class="nav-item"><a class="nav-link" href="/dai-ly-melbet">Đại lý MelBet</a></li>
-              <li class="nav-item"><a class="nav-link" href="/lien-he">Liên hệ</a></li>
-            </ul>
-            <form class="d-flex" action="{{ url_for('search') }}" method="GET">
-              <input class="form-control me-2" type="search" name="q" placeholder="Tìm kiếm..." value="{{ request.args.get('q', '') }}" />
-              <button class="btn btn-outline-warning" type="submit"><i class="fas fa-search"></i></button>
-            </form>
-          </div>
+      <div class="carousel-inner text-center">
+        <div class="carousel-item active">
+          <iframe scrolling="no" frameborder="0" style="width: 100%; height: 90px; border: none;" src="https://refpa11244.com/I?tag=d_4647185m_63177c_&site=4647185&ad=63177"></iframe>
         </div>
-      </nav>
-    </header>
-    <main class="main-content">
-      {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-          <div class="container mt-3">
-            {% for category, message in messages %}
-              <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
-                {{ message }}
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-              </div>
-            {% endfor %}
-          </div>
-        {% endif %}
-      {% endwith %}
-      {% block content %}{% endblock %}
-    </main>
-    <footer class="footer mt-5">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-4 col-md-6 mb-4">
-            <h5 class="text-warning">Kèo Sư</h5>
-            <p>Website kèo bóng đá chuyên nghiệp, cung cấp tỷ lệ kèo chính xác và phân tích chuyên sâu. Đối tác chính thức của MelBet tại Việt Nam.</p>
-          </div>
-          <div class="col-lg-2 col-md-6 mb-4">
-            <h6 class="text-warning">Liên kết</h6>
-            <ul class="list-unstyled">
-              <li><a href="{{ url_for('category_articles', slug='keo-thom') }}" class="text-light">Kèo thơm</a></li>
-              <li><a href="{{ url_for('category_articles', slug='soi-keo') }}" class="text-light">Soi kèo</a></li>
-              <li><a href="{{ url_for('category_articles', slug='meo-cuoc') }}" class="text-light">Mẹo cược</a></li>
-              <li><a href="{{ url_for('category_articles', slug='tin-tuc') }}" class="text-light">Tin tức</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-2 col-md-6 mb-4">
-            <h6 class="text-warning">Dịch vụ</h6>
-            <ul class="list-unstyled">
-              <li><a href="{{ url_for('category_articles', slug='lich-thi-dau') }}" class="text-light">Lịch thi đấu</a></li>
-              <li><a href="{{ url_for('category_articles', slug='ty-so-truc-tiep') }}" class="text-light">Tỷ số trực tiếp</a></li>
-              <li><a href="/dai-ly-melbet" class="text-light">Đại lý MelBet</a></li>
-              <li><a href="/lien-he" class="text-light">Liên hệ</a></li>
-            </ul>
-          </div>
-          <div class="col-lg-4 col-md-6 mb-4">
-            <h6 class="text-warning">Liên hệ</h6>
-            <p><i class="fas fa-envelope me-2"></i> <a href="mailto:melbet.globalaffiliates@gmail.com" class="text-light">melbet.globalaffiliates@gmail.com</a></p>
-            <p><i class="fas fa-phone me-2"></i> +35795553979</p>
-            <p><i class="fas fa-globe me-2"></i> <a href="https://melbetglobalaffiliates.dcms.site/" class="text-light" target="_blank">melbetglobalaffiliates.dcms.site</a></p>
-            <p><i class="fab fa-facebook me-2"></i> <a href="https://facebook.com/globalmelbet" class="text-light" target="_blank">facebook.com/globalmelbet</a></p>
-            <p><i class="fas fa-map-marker-alt me-2"></i> <a href="https://share.google/JirZ1MD0bTkGf9aBA" class="text-light" target="_blank">Xem vị trí doanh nghiệp</a></p>
-            <div class="mt-3 d-flex gap-2 flex-wrap">
-              <a href="https://forms.gle/HM6AZVQo5hvX13kJ9" class="btn btn-outline-warning btn-sm" target="_blank">Đăng Ký (Tiếng Việt)</a>
-              <a href="https://forms.gle/R3cZfUfcNTQsr7r27" class="btn btn-outline-light btn-sm" target="_blank">Register (English)</a>
-            </div>
-          </div>
+        <div class="carousel-item">
+          <iframe scrolling="no" frameborder="0" style="width: 100%; height: 90px; border: none;" src="https://refpa11244.com/I?tag=d_4647185m_62931c_&site=4647185&ad=62931"></iframe>
         </div>
-        <hr class="border-warning" />
-        <div class="row">
-          <div class="col-md-6">
-            <p>&copy; {{ get_current_year() }} Kèo Sư. Tất cả quyền được bảo lưu.</p>
-          </div>
-          <div class="col-md-6 text-md-end">
-            <p>Đối tác chính thức <span class="text-warning fw-bold">MelBet</span></p>
-          </div>
+        <div class="carousel-item">
+          <iframe scrolling="no" frameborder="0" style="width: 100%; height: 90px; border: none;" src="https://refpa11244.com/I?tag=d_4647185m_18643c_&site=4647185&ad=18643"></iframe>
         </div>
       </div>
-    </footer>
-    <!-- Chatbot Kèo Sư -->
-    <div id="chatbot-container" class="position-fixed" style="bottom: 20px; right: 20px; z-index: 1000;">
-      <button class="btn btn-warning rounded-circle p-3" id="chatbot-toggle" type="button">
-        <i class="fas fa-comments fa-lg"></i>
+      <button class="carousel-control-prev" type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
       </button>
-      <div id="chatbot-iframe" class="d-none" style="width: 350px; height: 500px;">
-        <iframe src="https://udify.app/chatbot/xhJuB06Ye6hfb3s5" 
-                width="100%" 
-                height="100%" 
-                frameborder="0" 
-                style="border-radius: 10px;">
-        </iframe>
-      </div>
+      <button class="carousel-control-next" type="button" data-bs-target="#melbetBannerCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
     </div>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-    {% block scripts %}{% endblock %}
-  </body>
-</html>
+    <div class="text-center mb-4 d-flex flex-wrap justify-content-center gap-3">
+      <a href="https://refpa3665.com/L?tag=d_4647185m_18643c_&site=4647185&ad=18643" class="btn btn-warning btn-sm" target="_blank">🎁 Đăng Ký Người Chơi</a>
+      <a href="https://refpa3665.com/L?tag=d_4647185m_18645c_&site=4647185&ad=18645" class="btn btn-outline-light btn-sm" target="_blank">💼 Đăng Ký Đại Lý</a>
+      <a href="https://keo-su-mel-bet.onrender.com/" class="btn btn-outline-secondary btn-sm" target="_blank">🔄 Truy cập Vòng quay may mắn Kèo Sư</a>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="header">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+      <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('index') }}">
+          <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Kèo Sư" width="40" height="40" class="me-2" />
+          <span class="brand-text">Kèo Sư</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav me-auto">
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('keo_thom') }}">Kèo thơm</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('lich_thi_dau') }}">Lịch thi đấu</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('ty_so_truc_tiep') }}">Tỷ số trực tiếp</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('soi_keo') }}">Soi kèo</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('meo_cuoc') }}">Mẹo cược</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('tin_tuc') }}">Tin tức</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('dai_ly_melbet') }}">Đại lý MelBet</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ url_for('lien_he') }}">Liên hệ</a></li>
+          </ul>
+          <form class="d-flex" action="{{ url_for('search') }}" method="GET">
+            <input class="form-control me-2" type="search" name="q" placeholder="Tìm kiếm..." value="{{ request.args.get('q', '') }}" />
+            <button class="btn btn-outline-warning" type="submit"><i class="fas fa-search"></i></button>
+          </form>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="container mt-3">
+          {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else 'success' }} alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
