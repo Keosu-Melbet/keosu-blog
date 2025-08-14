@@ -1,3 +1,4 @@
+import admin_routes
 import os
 import logging
 from flask import Flask, request, url_for
