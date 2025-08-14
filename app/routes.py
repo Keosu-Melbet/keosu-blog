@@ -1,4 +1,5 @@
 from flask import render_template, request, redirect, url_for, flash, jsonify, make_response
+from app import app
 from .extensions import db
 from .models import Article, Category, BettingOdd, Match
 from .forms import ArticleForm, ContactForm, SearchForm
