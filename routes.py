@@ -218,5 +218,26 @@ def sitemap():
         {'url': url_for('admin_login'), 'priority': '0.3'},
     ]
 
+    # Thêm các trang tĩnh vào danh sách
+    for page in static_pages:
+        pages.append({
+            'url': page['url'],
+            'lastmod': datetime.utcnow().strftime('%Y-%m-%d'),
+            'priority': page['priority']
+        })
+
+    # Thêm các bài viết đã publish
     articles = Article.query.filter_by(published=True).all()
-    for article
+    for article in articles:
+        pages.append({
+            'url': url_for('article_detail', slug=article.slug, _external=True),
+            'lastmod': article.updated_at.strftime('%Y-%m-%d') if article.updated_at else '',
+            'priority': '0.7'
+        })
+
+    # Render XML từ template
+    xml = render_template('sitemap_template.xml', pages=pages)
+    response = make_response(xml)
+    response.headers['Content-Type'] = 'application/xml'
+    return response
+
