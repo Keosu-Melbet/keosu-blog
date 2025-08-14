@@ -7,6 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import datetime
+from core import app, db, login_manager
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
