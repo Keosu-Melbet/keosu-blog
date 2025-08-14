@@ -1,7 +1,7 @@
 from flask import request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 import os
-from app import app, db
+from core import app, db
 from models import Article
 
 UPLOAD_FOLDER = 'static/uploads'
