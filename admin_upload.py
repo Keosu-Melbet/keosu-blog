@@ -2,9 +2,6 @@ from flask import request, redirect, url_for, flash
 from werkzeug.utils import secure_filename
 import os
 from models import Article
-from core import create_app, db
-
-app = create_app()
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
