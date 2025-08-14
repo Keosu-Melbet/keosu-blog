@@ -1,158 +1,165 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="container">
+    <!-- Hero Banner -->
+    <section class="hero-banner mb-5">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold text-warning mb-3">Kèo Sư - Chuyên Gia Kèo Bóng Đá</h1>
+                <p class="lead mb-4">Cung cấp tỷ lệ kèo chính xác, phân tích chuyên sâu và mẹo cược hiệu quả. Đối tác chính thức MelBet tại Việt Nam.</p>
+                <div class="d-flex gap-3">
+                    <a href="{{ url_for('keo_thom') }}" class="btn btn-warning btn-lg">Xem Kèo Thơm</a>
+                    <a href="{{ url_for('dai_ly_melbet') }}" class="btn btn-outline-warning btn-lg">Đăng Ký MelBet</a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-center">
+                <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Kèo Sư" class="img-fluid" style="max-width: 200px;">
+            </div>
+        </div>
+    </section>
 
-<!-- Hero Banner -->
-<section class="hero-banner mb-5">
-  <div class="row align-items-center">
-    <div class="col-lg-8">
-      <h1 class="display-4 fw-bold text-warning mb-3">Kèo Sư - Chuyên Gia Kèo Bóng Đá</h1>
-      <p class="lead mb-4">Cung cấp tỷ lệ kèo chính xác, phân tích chuyên sâu và mẹo cược hiệu quả. Đối tác chính thức MelBet tại Việt Nam.</p>
-      <div class="d-flex gap-3">
-        <a href="{{ url_for('category_articles', slug='keo-thom') }}" class="btn btn-warning btn-lg">Xem Kèo Thơm</a>
-        <a href="/dai-ly-melbet" class="btn btn-outline-warning btn-lg">Đăng Ký MelBet</a>
-      </div>
-    </div>
-    <div class="col-lg-4 text-center">
-      <img src="{{ url_for('static', filename='images/logo.svg') }}" alt="Kèo Sư" class="img-fluid" style="max-width: 200px;">
-    </div>
-  </div>
-</section>
+    <!-- MelBet Banner -->
+    <section class="melbet-banner mb-5">
+        <div class="card bg-dark border-warning">
+            <div class="card-body text-center py-4">
+                <h3 class="text-warning mb-3">🎯 Nhà Cái MelBet - Uy Tín Hàng Đầu</h3>
+                <p class="text-light mb-3">Tỷ lệ kèo tốt nhất • Thanh toán nhanh chóng • Hỗ trợ 24/7</p>
+                <div class="row">
+                    <div class="col-md-3 mb-2">
+                        <span class="badge bg-warning text-dark p-2">Bonus 100%</span>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <span class="badge bg-warning text-dark p-2">Rút tiền 24h</span>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <span class="badge bg-warning text-dark p-2">Live Betting</span>
+                    </div>
+                    <div class="col-md-3 mb-2">
+                        <span class="badge bg-warning text-dark p-2">Casino Live</span>
+                    </div>
+                </div>
+                <a href="{{ url_for('dai_ly_melbet') }}" class="btn btn-warning btn-lg mt-3">Đăng Ký Ngay</a>
+            </div>
+        </div>
+    </section>
 
-<!-- MelBet Banner -->
-<section class="melbet-banner mb-5">
-  <div class="card bg-dark border-warning">
-    <div class="card-body text-center py-4">
-      <h3 class="text-warning mb-3">🎯 Nhà Cái MelBet - Uy Tín Hàng Đầu</h3>
-      <p class="text-light mb-3">Tỷ lệ kèo tốt nhất • Thanh toán nhanh chóng • Hỗ trợ 24/7</p>
-      <div class="row">
-        <div class="col-md-3 mb-2"><span class="badge bg-warning text-dark p-2">Bonus 100%</span></div>
-        <div class="col-md-3 mb-2"><span class="badge bg-warning text-dark p-2">Rút tiền 24h</span></div>
-        <div class="col-md-3 mb-2"><span class="badge bg-warning text-dark p-2">Live Betting</span></div>
-        <div class="col-md-3 mb-2"><span class="badge bg-warning text-dark p-2">Casino Live</span></div>
-      </div>
-      <a href="/dai-ly-melbet" class="btn btn-warning btn-lg mt-3">Đăng Ký Ngay</a>
-    </div>
-  </div>
-</section>
+    <!-- Featured Articles -->
+    {% if featured_articles %}
+    <section class="featured-articles mb-5">
+        <h2 class="section-title text-warning mb-4">
+            <i class="fas fa-star me-2"></i>Bài Viết Nổi Bật
+        </h2>
+        <div class="row">
+            {% for article in featured_articles %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <article class="card h-100 bg-dark border-secondary">
+                    {% if article.featured_image %}
+                    <img src="{{ article.featured_image }}" class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-warning text-dark mb-2">{{ article.category.name }}</span>
+                        <h5 class="card-title text-warning">
+                            <a href="{{ url_for('article_detail', slug=article.slug) }}" class="text-decoration-none text-warning">
+                                {{ article.title }}
+                            </a>
+                        </h5>
+                        <p class="card-text text-light">{{ article.get_excerpt(100) }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-secondary">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>{{ article.created_at.strftime('%d/%m/%Y') }}
+                            <i class="fas fa-eye ms-3 me-1"></i>{{ article.views }}
+                        </small>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
 
-<!-- Featured Articles -->
-{% if featured_articles %}
-<section class="featured-articles mb-5">
-  <h2 class="section-title text-warning mb-4">
-    <i class="fas fa-star me-2"></i>Bài Viết Nổi Bật
-  </h2>
-  <div class="row">
-    {% for article in featured_articles %}
-    <div class="col-lg-4 col-md-6 mb-4">
-      <article class="card h-100 bg-dark border-secondary">
-        {% if article.featured_image %}
-        <img src="{{ article.featured_image }}" class="card-img-top" alt="{{ article.title }}" style="height: 200px; object-fit: cover;">
-        {% endif %}
-        <div class="card-body">
-          <span class="badge bg-warning text-dark mb-2">{{ article.category.name }}</span>
-          <h5 class="card-title text-warning">
-            <a href="{{ url_for('article_detail', slug=article.slug) }}" class="text-decoration-none text-warning">
-              {{ article.title }}
-            </a>
-          </h5>
-          <p class="card-text text-light">{{ article.get_excerpt(100) }}</p>
+    <!-- Quick Access -->
+    <section class="quick-access mb-5">
+        <h2 class="section-title text-warning mb-4">
+            <i class="fas fa-rocket me-2"></i>Truy Cập Nhanh
+        </h2>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-dark border-warning h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-fire text-warning fa-3x mb-3"></i>
+                        <h5 class="card-title text-warning">Kèo Thơm Hôm Nay</h5>
+                        <p class="card-text text-light">Những kèo có tỷ lệ thắng cao nhất</p>
+                        <a href="{{ url_for('keo_thom') }}" class="btn btn-warning">Xem Ngay</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-dark border-warning h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-search text-warning fa-3x mb-3"></i>
+                        <h5 class="card-title text-warning">Soi Kèo</h5>
+                        <p class="card-text text-light">Phân tích chuyên sâu từ chuyên gia</p>
+                        <a href="{{ url_for('soi_keo') }}" class="btn btn-warning">Phân Tích</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-dark border-warning h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-calendar text-warning fa-3x mb-3"></i>
+                        <h5 class="card-title text-warning">Lịch Thi Đấu</h5>
+                        <p class="card-text text-light">Lịch đấu cập nhật liên tục</p>
+                        <a href="{{ url_for('lich_thi_dau') }}" class="btn btn-warning">Xem Lịch</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="card bg-dark border-warning h-100 text-center">
+                    <div class="card-body">
+                        <i class="fas fa-futbol text-warning fa-3x mb-3"></i>
+                        <h5 class="card-title text-warning">Tỷ Số Trực Tiếp</h5>
+                        <p class="card-text text-light">Theo dõi kết quả realtime</p>
+                        <a href="{{ url_for('ty_so_truc_tiep') }}" class="btn btn-warning">Xem Tỷ Số</a>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-footer bg-transparent border-secondary">
-          <small class="text-muted">
-            <i class="fas fa-calendar me-1"></i>{{ article.created_at.strftime('%d/%m/%Y') }}
-            <i class="fas fa-eye ms-3 me-1"></i>{{ article.views }}
-          </small>
-        </div>
-      </article>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
+    </section>
 
-<!-- Quick Access -->
-<section class="quick-access mb-5">
-  <h2 class="section-title text-warning mb-4">
-    <i class="fas fa-rocket me-2"></i>Truy Cập Nhanh
-  </h2>
-  <div class="row">
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="card bg-dark border-warning h-100 text-center">
-        <div class="card-body">
-          <i class="fas fa-fire text-warning fa-3x mb-3"></i>
-          <h5 class="card-title text-warning">Kèo Thơm Hôm Nay</h5>
-          <p class="card-text text-light">Những kèo có tỷ lệ thắng cao nhất</p>
-          <a href="{{ url_for('category_page', slug='keo-thom') }}" class="btn btn-warning">Xem Ngay</a>
+    <!-- Recent Articles -->
+    {% if recent_articles %}
+    <section class="recent-articles">
+        <h2 class="section-title text-warning mb-4">
+            <i class="fas fa-newspaper me-2"></i>Bài Viết Mới Nhất
+        </h2>
+        <div class="row">
+            {% for article in recent_articles %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <article class="card h-100 bg-dark border-secondary">
+                    {% if article.featured_image %}
+                    <img src="{{ article.featured_image }}" class="card-img-top" alt="{{ article.title }}" style="height: 180px; object-fit: cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="badge bg-secondary mb-2">{{ article.category.name }}</span>
+                        <h6 class="card-title">
+                            <a href="{{ url_for('article_detail', slug=article.slug) }}" class="text-decoration-none text-light">
+                                {{ article.title }}
+                            </a>
+                        </h6>
+                        <p class="card-text text-muted small">{{ article.get_excerpt(80) }}</p>
+                    </div>
+                    <div class="card-footer bg-transparent border-secondary">
+                        <small class="text-muted">
+                            <i class="fas fa-calendar me-1"></i>{{ article.created_at.strftime('%d/%m/%Y') }}
+                        </small>
+                    </div>
+                </article>
+            </div>
+            {% endfor %}
         </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="card bg-dark border-warning h-100 text-center">
-        <div class="card-body">
-          <i class="fas fa-search text-warning fa-3x mb-3"></i>
-          <h5 class="card-title text-warning">Soi Kèo</h5>
-          <p class="card-text text-light">Phân tích chuyên sâu từ chuyên gia</p>
-          <a href="{{ url_for('category_page', slug='soi-keo') }}" class="btn btn-warning">Phân Tích</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="card bg-dark border-warning h-100 text-center">
-        <div class="card-body">
-          <i class="fas fa-calendar text-warning fa-3x mb-3"></i>
-          <h5 class="card-title text-warning">Lịch Thi Đấu</h5>
-          <p class="card-text text-light">Lịch đấu cập nhật liên tục</p>
-          <a href="{{ url_for('category_page', slug='lich-thi-dau') }}" class="btn btn-warning">Xem Lịch</a>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-md-6 mb-4">
-      <div class="card bg-dark border-warning h-100 text-center">
-        <div class="card-body">
-          <i class="fas fa-futbol text-warning fa-3x mb-3"></i>
-          <h5 class="card-title text-warning">Tỷ Số Trực Tiếp</h5>
-          <p class="card-text text-light">Theo dõi kết quả realtime</p>
-          <a href="{{ url_for('category_page', slug='ty-so-truc-tiep') }}" class="btn btn-warning">Xem Tỷ Số</a>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Recent Articles -->
-{% if recent_articles %}
-<section class="recent-articles">
-  <h2 class="section-title text-warning mb-4">
-    <i class="fas fa-newspaper me-2"></i>Bài Viết Mới Nhất
-  </h2>
-  <div class="row">
-    {% for article in recent_articles %}
-    <div class="col-lg-4 col-md-6 mb-4">
-      <article class="card h-100 bg-dark border-secondary">
-        {% if article.featured_image %}
-        <img src="{{ article.featured_image }}" class="card-img-top" alt="{{ article.title }}" style="height: 180px; object-fit: cover;">
-        {% endif %}
-        <div class="card-body">
-          <span class="badge bg-secondary mb-2">{{ article.category.name }}</span>
-          <h6 class="card-title">
-            <a href="{{ url_for('article_detail', slug=article.slug) }}" class="text-decoration-none text-light">
-              {{ article.title }}
-            </a>
-          </h6>
-          <p class="card-text text-muted small">{{ article.get_excerpt(80) }}</p>
-        </div>
-        <div class="card-footer bg-transparent border-secondary">
-          <small class="text-muted">
-            <i class="fas fa-calendar me-1"></i>{{ article.created_at.strftime('%d/%m/%Y') }}
-          </small>
-        </div>
-      </article>
-    </div>
-    {% endfor %}
-  </div>
-</section>
-{% endif %}
-
-</div> <!-- kết thúc .container -->
+    </section>
+    {% endif %}
+</div>
 {% endblock %}
