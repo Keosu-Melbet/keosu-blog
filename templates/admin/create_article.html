@@ -4,6 +4,7 @@
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-lg-10">
+
             <!-- Page Header -->
             <div class="page-header mb-4">
                 <h1 class="text-warning">
@@ -12,37 +13,30 @@
                 <p class="text-light">Thêm bài viết mới vào website</p>
             </div>
 
+            <!-- Form Card -->
             <div class="card bg-dark border-warning">
                 <div class="card-header bg-warning text-dark">
                     <h5 class="mb-0">Thông Tin Bài Viết</h5>
                 </div>
                 <div class="card-body">
-                    <form method="POST">
+                    <form method="POST" enctype="multipart/form-data">
                         {{ form.hidden_tag() }}
-                        
+
                         <!-- Basic Info -->
                         <div class="row">
                             <div class="col-md-8 mb-3">
                                 {{ form.title.label(class="form-label text-warning") }}
-                                {{ form.title(class="form-control form-control-lg") }}
-                                {% if form.title.errors %}
-                                    <div class="text-danger small">
-                                        {% for error in form.title.errors %}
-                                            <div>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                {{ form.title(class="form-control form-control-lg", id="title") }}
+                                {% for error in form.title.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
                             </div>
                             <div class="col-md-4 mb-3">
                                 {{ form.category_id.label(class="form-label text-warning") }}
                                 {{ form.category_id(class="form-control") }}
-                                {% if form.category_id.errors %}
-                                    <div class="text-danger small">
-                                        {% for error in form.category_id.errors %}
-                                            <div>{{ error }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                {% for error in form.category_id.errors %}
+                                    <div class="text-danger small">{{ error }}</div>
+                                {% endfor %}
                             </div>
                         </div>
 
@@ -50,13 +44,9 @@
                         <div class="mb-3">
                             {{ form.content.label(class="form-label text-warning") }}
                             {{ form.content(class="form-control", rows="12") }}
-                            {% if form.content.errors %}
-                                <div class="text-danger small">
-                                    {% for error in form.content.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                            {% for error in form.content.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
                             <div class="form-text text-muted">Bạn có thể sử dụng HTML tags để định dạng nội dung</div>
                         </div>
 
@@ -64,13 +54,9 @@
                         <div class="mb-3">
                             {{ form.excerpt.label(class="form-label text-warning") }}
                             {{ form.excerpt(class="form-control", rows="3") }}
-                            {% if form.excerpt.errors %}
-                                <div class="text-danger small">
-                                    {% for error in form.excerpt.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
+                            {% for error in form.excerpt.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
                             <div class="form-text text-muted">Mô tả ngắn gọn về bài viết (để trống sẽ tự động tạo từ nội dung)</div>
                         </div>
 
@@ -78,14 +64,10 @@
                         <div class="mb-3">
                             {{ form.featured_image.label(class="form-label text-warning") }}
                             {{ form.featured_image(class="form-control") }}
-                            {% if form.featured_image.errors %}
-                                <div class="text-danger small">
-                                    {% for error in form.featured_image.errors %}
-                                        <div>{{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
-                            <div class="form-text text-muted">URL của ảnh đại diện cho bài viết</div>
+                            {% for error in form.featured_image.errors %}
+                                <div class="text-danger small">{{ error }}</div>
+                            {% endfor %}
+                            <div class="form-text text-muted">Chọn ảnh đại diện cho bài viết</div>
                         </div>
 
                         <!-- Settings -->
@@ -118,46 +100,36 @@
                         <!-- SEO Section -->
                         <div class="card bg-secondary mb-4">
                             <div class="card-header">
-                                <h6 class="text-warning mb-0"><i class="fas fa-search me-2"></i>Tối Ưu SEO</h6>
+                                <h6 class="text-warning mb-0">
+                                    <i class="fas fa-search me-2"></i>Tối Ưu SEO
+                                </h6>
                             </div>
                             <div class="card-body">
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         {{ form.meta_title.label(class="form-label text-warning") }}
-                                        {{ form.meta_title(class="form-control") }}
-                                        {% if form.meta_title.errors %}
-                                            <div class="text-danger small">
-                                                {% for error in form.meta_title.errors %}
-                                                    <div>{{ error }}</div>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
+                                        {{ form.meta_title(class="form-control", id="meta_title") }}
+                                        {% for error in form.meta_title.errors %}
+                                            <div class="text-danger small">{{ error }}</div>
+                                        {% endfor %}
                                         <div class="form-text text-muted">Để trống sẽ dùng tiêu đề chính</div>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         {{ form.meta_keywords.label(class="form-label text-warning") }}
                                         {{ form.meta_keywords(class="form-control") }}
-                                        {% if form.meta_keywords.errors %}
-                                            <div class="text-danger small">
-                                                {% for error in form.meta_keywords.errors %}
-                                                    <div>{{ error }}</div>
-                                                {% endfor %}
-                                            </div>
-                                        {% endif %}
+                                        {% for error in form.meta_keywords.errors %}
+                                            <div class="text-danger small">{{ error }}</div>
+                                        {% endfor %}
                                         <div class="form-text text-muted">Các từ khóa cách nhau bằng dấu phẩy</div>
                                     </div>
                                 </div>
                                 <div class="mb-0">
                                     {{ form.meta_description.label(class="form-label text-warning") }}
-                                    {{ form.meta_description(class="form-control", rows="2") }}
-                                    {% if form.meta_description.errors %}
-                                        <div class="text-danger small">
-                                            {% for error in form.meta_description.errors %}
-                                                <div>{{ error }}</div>
-                                            {% endfor %}
-                                        </div>
-                                    {% endif %}
-                                    <div class="form-text text-muted">Mô tả hiển thị trên kết quả tìm kiếm (150-160 ký tự)</div>
+                                    {{ form.meta_description(class="form-control", rows="2", id="meta_description") }}
+                                    {% for error in form.meta_description.errors %}
+                                        <div class="text-danger small">{{ error }}</div>
+                                    {% endfor %}
+                                    <div class="form-text text-muted">Mô tả hiển thị trên kết quả tìm kiếm (150–160 ký tự)</div>
                                 </div>
                             </div>
                         </div>
@@ -170,6 +142,7 @@
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>
@@ -177,29 +150,35 @@
 
 {% block scripts %}
 <script>
-// Auto-generate meta title from title
-document.querySelector('#title').addEventListener('input', function() {
-    const metaTitle = document.querySelector('#meta_title');
-    if (!metaTitle.value) {
-        metaTitle.value = this.value;
+document.addEventListener('DOMContentLoaded', function () {
+    const titleInput = document.querySelector('#title');
+    const metaTitleInput = document.querySelector('#meta_title');
+    const metaDescInput = document.querySelector('#meta_description');
+
+    // Auto-fill meta title
+    if (titleInput && metaTitleInput) {
+        titleInput.addEventListener('input', function () {
+            if (!metaTitleInput.value.trim()) {
+                metaTitleInput.value = this.value;
+            }
+        });
+    }
+
+    // Character counter for meta description
+    if (metaDescInput) {
+        const counter = document.createElement('div');
+        counter.className = 'form-text text-muted mt-1';
+        metaDescInput.parentNode.appendChild(counter);
+
+        function updateCounter() {
+            const length = metaDescInput.value.length;
+            counter.textContent = `${length}/160 ký tự`;
+            counter.style.color = length > 160 ? '#dc3545' : length > 150 ? '#ffc107' : '#6c757d';
+        }
+
+        metaDescInput.addEventListener('input', updateCounter);
+        updateCounter();
     }
 });
-
-// Character counter for meta description
-const metaDesc = document.querySelector('#meta_description');
-if (metaDesc) {
-    const counter = document.createElement('div');
-    counter.className = 'form-text text-muted';
-    metaDesc.parentNode.appendChild(counter);
-    
-    function updateCounter() {
-        const length = metaDesc.value.length;
-        counter.textContent = `${length}/160 ký tự`;
-        counter.style.color = length > 160 ? '#dc3545' : length > 150 ? '#ffc107' : '#6c757d';
-    }
-    
-    metaDesc.addEventListener('input', updateCounter);
-    updateCounter();
-}
 </script>
 {% endblock %}
