@@ -1,8 +1,31 @@
-from extensions import db
+from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from sqlalchemy import event
 import re
 from werkzeug.security import generate_password_hash, check_password_hash
+
+db = SQLAlchemy()
+
+# -------------------- Admin --------------------
+
+class Admin(db.Model):
+    __tablename__ = 'admins'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def __repr__(self):
+        return f'<Admin {self.username}>'
+
+# -------------------- Category --------------------
 
 class Category(db.Model):
     __tablename__ = 'categories'
@@ -13,12 +36,12 @@ class Category(db.Model):
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
-    # Relationship
     articles = db.relationship('Article', backref='category', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Category {self.name}>'
 
+# -------------------- Article --------------------
 
 class Article(db.Model):
     __tablename__ = 'articles'
@@ -35,12 +58,10 @@ class Article(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
-    # SEO fields
     meta_title = db.Column(db.String(200))
     meta_description = db.Column(db.String(300))
     meta_keywords = db.Column(db.String(500))
 
-    # Foreign key
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete='CASCADE'), nullable=False)
 
     def __repr__(self):
@@ -63,12 +84,12 @@ class Article(db.Model):
             return f'/static/uploads/{self.featured_image}'
         return None
 
-
 @event.listens_for(Article, 'before_insert')
 def generate_article_slug(mapper, connection, target):
     if not target.slug:
         target.slug = target.generate_slug()
 
+# -------------------- Betting Odds --------------------
 
 class BettingOdd(db.Model):
     __tablename__ = 'betting_odds'
@@ -80,27 +101,25 @@ class BettingOdd(db.Model):
     match_date = db.Column(db.DateTime, nullable=False)
     league = db.Column(db.String(100))
 
-    # Odds
     home_win = db.Column(db.Float)
     draw = db.Column(db.Float)
     away_win = db.Column(db.Float)
     over_2_5 = db.Column(db.Float)
     under_2_5 = db.Column(db.Float)
 
-    # Asian Handicap
     handicap = db.Column(db.String(10))
     handicap_home = db.Column(db.Float)
     handicap_away = db.Column(db.Float)
 
-    # Recommendation
     recommendation = db.Column(db.String(200))
-    confidence = db.Column(db.Integer)  # 1–5 scale
+    confidence = db.Column(db.Integer)
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self):
         return f'<BettingOdd {self.home_team} vs {self.away_team}>'
 
+# -------------------- Match --------------------
 
 class Match(db.Model):
     __tablename__ = 'matches'
@@ -111,28 +130,10 @@ class Match(db.Model):
     match_date = db.Column(db.DateTime, nullable=False)
     league = db.Column(db.String(100))
     venue = db.Column(db.String(200))
-    status = db.Column(db.String(20), default='scheduled')  # scheduled, live, finished
+    status = db.Column(db.String(20), default='scheduled')
     home_score = db.Column(db.Integer)
     away_score = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self):
         return f'<Match {self.home_team} vs {self.away_team}>'
-
-
-class User(db.Model):
-    __tablename__ = 'users'
-
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(100), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def __repr__(self):
-        return f'<User {self.username}>'
