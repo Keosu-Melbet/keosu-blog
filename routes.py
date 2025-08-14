@@ -1,10 +1,11 @@
-from flask import render_template, request, redirect, url_for, flash, jsonify, make_response
-from app import app, db
-from models import Article, Category, BettingOdd, Match
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, make_response
+from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from models import db, Admin, Article, Category, BettingOdd, Match
 from forms import ArticleForm, ContactForm, SearchForm
+from werkzeug.security import check_password_hash
 from seo_utils import generate_meta_tags
-from datetime import datetime, timedelta
 from sqlalchemy import or_, desc
+from datetime import datetime, timedelta
 import xml.etree.ElementTree as ET
 
 @app.route('/')
@@ -309,13 +310,84 @@ def search():
                          query=query,
                          meta_tags=meta_tags)
 
-# SEO routes
+# -----------------------------
+# 🔐 Admin Routes
+# -----------------------------
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        admin = Admin.query.filter_by(username=username).first()
+        if admin and check_password_hash(admin.password, password):
+            login_user(admin)
+            return redirect(url_for('admin_dashboard'))
+        flash('Sai tài khoản hoặc mật khẩu', 'danger')
+    return render_template('login.html')
+
+@app.route('/admin/logout')
+@login_required
+def admin_logout():
+    logout_user()
+    return redirect(url_for('admin_login'))
+
+@app.route('/admin/dashboard')
+@login_required
+def admin_dashboard():
+    total_articles = Article.query.count()
+    return render_template('dashboard.html', total_articles=total_articles)
+
+@app.route('/admin/create-article', methods=['GET', 'POST'])
+@login_required
+def create_article():
+    form = ArticleForm()
+    form.category_id.choices = [(c.id, c.name) for c in Category.query.all()]
+    
+    if form.validate_on_submit():
+        article = Article(
+            title=form.title.data,
+            content=form.content.data,
+            excerpt=form.excerpt.data,
+            category_id=form.category_id.data,
+            featured_image=form.featured_image.data,
+            featured=form.featured.data,
+            published=form.published.data,
+            meta_title=form.meta_title.data,
+            meta_description=form.meta_description.data,
+            meta_keywords=form.meta_keywords.data,
+            created_at=datetime.utcnow()
+        )
+        article.slug = article.generate_slug()
+
+        # Đảm bảo slug là duy nhất
+        counter = 1
+        original_slug = article.slug
+        while Article.query.filter_by(slug=article.slug).first():
+            article.slug = f"{original_slug}-{counter}"
+            counter += 1
+
+        db.session.add(article)
+        db.session.commit()
+        flash('Bài viết đã được tạo thành công!', 'success')
+        return redirect(url_for('article_detail', slug=article.slug))
+
+    return render_template('admin/create_article.html', form=form)
+
+@app.route('/admin/articles')
+@login_required
+def manage_articles():
+    page = request.args.get('page', 1, type=int)
+    articles = Article.query.order_by(desc(Article.created_at))\
+                            .paginate(page=page, per_page=20, error_out=False)
+    return render_template('admin/manage_articles.html', articles=articles)
+
+# -----------------------------
+# ⚙️ SEO Routes
+# -----------------------------
 @app.route('/sitemap.xml')
 def sitemap():
-    """Generate sitemap.xml"""
     pages = []
-    
-    # Static pages
+
     static_pages = [
         {'url': url_for('index'), 'priority': '1.0'},
         {'url': url_for('keo_thom'), 'priority': '0.9'},
@@ -327,41 +399,39 @@ def sitemap():
         {'url': url_for('dai_ly_melbet'), 'priority': '0.6'},
         {'url': url_for('lien_he'), 'priority': '0.5'},
     ]
-    
-    # Articles
+
     articles = Article.query.filter_by(published=True).all()
     for article in articles:
         pages.append({
             'url': url_for('article_detail', slug=article.slug),
-            'lastmod': article.updated_at.strftime('%Y-%m-%d'),
+            'lastmod': article.updated_at.strftime('%Y-%m-%d') if article.updated_at else '',
             'priority': '0.8'
         })
-    
-    # Categories
+
     categories = Category.query.all()
     for category in categories:
         pages.append({
             'url': url_for('category_articles', slug=category.slug),
             'priority': '0.6'
         })
-    
+
     pages.extend(static_pages)
-    
+
     response = make_response(render_template('sitemap.xml', pages=pages))
     response.headers['Content-Type'] = 'application/xml'
     return response
 
 @app.route('/robots.txt')
 def robots():
-    """Generate robots.txt"""
     response = make_response(render_template('robots.txt'))
     response.headers['Content-Type'] = 'text/plain'
     return response
 
-# Context processors
+# -----------------------------
+# 🌍 Context Processors
+# -----------------------------
 @app.context_processor
 def inject_globals():
-    """Inject global variables into templates"""
     categories = Category.query.all()
     search_form = SearchForm()
     return {
@@ -369,7 +439,9 @@ def inject_globals():
         'search_form': search_form
     }
 
-# Error handlers
+# -----------------------------
+# ❌ Error Handlers
+# -----------------------------
 @app.errorhandler(404)
 def not_found_error(error):
     meta_tags = generate_meta_tags(
@@ -388,3 +460,9 @@ def internal_error(error):
         keywords="500, lỗi hệ thống"
     )
     return render_template('500.html', meta_tags=meta_tags), 500
+
+# -----------------------------
+# 🚀 Run App
+# -----------------------------
+if __name__ == '__main__':
+    app.run(debug=True)
