@@ -91,7 +91,7 @@ def soi_keo(page=1):
     """Soi kèo page"""
     category = Category.query.filter_by(slug='soi-keo').first()
     if not category:
-        flash(Chuyên mục không tồn tại', 'error )
+        flash('Chuyên mục không tồn tại', 'error )
         return redirect(url_for('index'))
     
     articles = Article.query.filter_by(category_id=category.id, published=True)\
