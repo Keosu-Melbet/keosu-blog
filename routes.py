@@ -1,4 +1,4 @@
-from core import app
+from core import db
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, make_response
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from models import db, Admin, Article, Category, BettingOdd, Match
