@@ -19,6 +19,15 @@ def admin_upload_image(id):
     if 'image' not in request.files:
         flash('Không có file ảnh')
         return redirect(url_for('admin_edit_article', id=id))
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        flash('Upload thành công')
+        return redirect(url_for('admin_edit_article', id=id))
+    else:
+        flash('Định dạng file không hợp lệ')
+        return redirect(url_for('admin_edit_article', id=id))
+
     
     file = request.files['image']
     if file.filename == '':
