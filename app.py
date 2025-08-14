@@ -8,6 +8,8 @@ from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import datetime
 from core import app, db, login_manager
+from models import Admin
+
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
