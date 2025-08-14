@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: your-app-name
+    name: flask-admin
     env: python
-    buildCommand: ""
-    startCommand: gunicorn app:app
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn main:app
