@@ -1,5 +1,6 @@
 import os
-from app import create_app  # hoặc từ đúng module bạn đặt
+from app import create_app
+from app import routes  # ✅ Import để Flask biết đến route
 
 app = create_app()
 
