@@ -5,6 +5,7 @@ from forms import ArticleForm, ContactForm, SearchForm
 from werkzeug.security import check_password_hash
 from seo_utils import generate_meta_tags
 from sqlalchemy import or_, desc
+from core import db
 from datetime import datetime, timedelta
 import xml.etree.ElementTree as ET
 
