@@ -77,7 +77,7 @@ def index():
                          recent_articles=recent_articles,
                          meta_tags=meta_tags)
 
-@app.route('/keo-thom')
+@bp.route('/keo-thom')
 def keo_thom():
     """Kèo thơm hôm nay page"""
     # Get today's betting odds
@@ -97,7 +97,7 @@ def keo_thom():
     
     return render_template('keo-thom.html', odds=odds, meta_tags=meta_tags)
 
-@app.route('/lich-thi-dau')
+@bp.route('/lich-thi-dau')
 def lich_thi_dau():
     """Lịch thi đấu page"""
     date_str = request.args.get('date')
@@ -126,7 +126,7 @@ def lich_thi_dau():
                          selected_date=selected_date,
                          meta_tags=meta_tags)
 
-@app.route('/ty-so-truc-tiep')
+@bp.route('/ty-so-truc-tiep')
 def ty_so_truc_tiep():
     """Tỷ số trực tiếp page"""
     meta_tags = generate_meta_tags(
@@ -137,8 +137,8 @@ def ty_so_truc_tiep():
     
     return render_template('ty-so-truc-tiep.html', meta_tags=meta_tags)
 
-@app.route('/soi-keo')
-@app.route('/soi-keo/<int:page>')
+@bp.route('/soi-keo')
+@bp.route('/soi-keo/<int:page>')
 def soi_keo(page=1):
     """Soi kèo page"""
     category = Category.query.filter_by(slug='soi-keo').first()
@@ -161,8 +161,8 @@ def soi_keo(page=1):
                          category=category,
                          meta_tags=meta_tags)
 
-@app.route('/meo-cuoc')
-@app.route('/meo-cuoc/<int:page>')
+@bp.route('/meo-cuoc')
+@bp.route('/meo-cuoc/<int:page>')
 def meo_cuoc(page=1):
     """Mẹo cược page"""
     category = Category.query.filter_by(slug='meo-cuoc').first()
@@ -185,8 +185,8 @@ def meo_cuoc(page=1):
                          category=category,
                          meta_tags=meta_tags)
 
-@app.route('/tin-tuc')
-@app.route('/tin-tuc/<int:page>')
+@bp.route('/tin-tuc')
+@bp.route('/tin-tuc/<int:page>')
 def tin_tuc(page=1):
     """Tin tức page"""
     category = Category.query.filter_by(slug='tin-tuc').first()
@@ -209,7 +209,7 @@ def tin_tuc(page=1):
                          category=category,
                          meta_tags=meta_tags)
 
-@app.route('/dai-ly-melbet')
+@bp.route('/dai-ly-melbet')
 def dai_ly_melbet():
     """Đại lý MelBet page"""
     meta_tags = generate_meta_tags(
@@ -220,7 +220,7 @@ def dai_ly_melbet():
     
     return render_template('dai-ly-melbet.html', meta_tags=meta_tags)
 
-@app.route('/lien-he', methods=['GET', 'POST'])
+@bp.route('/lien-he', methods=['GET', 'POST'])
 def lien_he():
     """Liên hệ page"""
     form = ContactForm()
@@ -238,7 +238,7 @@ def lien_he():
     
     return render_template('lien-he.html', form=form, meta_tags=meta_tags)
 
-@app.route('/bai-viet/<slug>')
+@bp.route('/bai-viet/<slug>')
 def article_detail(slug):
     """Article detail page"""
     article = Article.query.filter_by(slug=slug, published=True).first_or_404()
@@ -265,8 +265,8 @@ def article_detail(slug):
                          related_articles=related_articles,
                          meta_tags=meta_tags)
 
-@app.route('/chuyen-muc/<slug>')
-@app.route('/chuyen-muc/<slug>/<int:page>')
+@bp.route('/chuyen-muc/<slug>')
+@bp.route('/chuyen-muc/<slug>/<int:page>')
 def category_articles_vn(slug, page=1):
     """Category articles page"""
     category = Category.query.filter_by(slug=slug).first_or_404()
@@ -287,7 +287,7 @@ def category_articles_vn(slug, page=1):
                          meta_tags=meta_tags)
 
 # Admin routes
-@app.route('/admin/create-article', methods=['GET', 'POST'])
+@bp.route('/admin/create-article', methods=['GET', 'POST'])
 def create_article():
     """Create new article"""
     form = ArticleForm()
@@ -324,7 +324,7 @@ def create_article():
     
     return render_template('admin/create_article.html', form=form)
 
-@app.route('/admin/articles')
+@bp.route('/admin/articles')
 def manage_articles():
     """Manage articles"""
     page = request.args.get('page', 1, type=int)
@@ -333,7 +333,7 @@ def manage_articles():
     
     return render_template('admin/manage_articles.html', articles=articles)
 
-@app.route('/search')
+@bp.route('/search')
 def search():
     """Search articles"""
     query = request.args.get('q', '')
@@ -363,7 +363,7 @@ def search():
                          meta_tags=meta_tags)
 
 # SEO routes
-@app.route('/sitemap.xml')
+@bp.route('/sitemap.xml')
 def sitemap():
     """Generate sitemap.xml"""
     pages = []
@@ -404,7 +404,7 @@ def sitemap():
     response.headers['Content-Type'] = 'application/xml'
     return response
 
-@app.route('/robots.txt')
+@bp.route('/robots.txt')
 def robots():
     """Generate robots.txt"""
     response = make_response(render_template('robots.txt'))
