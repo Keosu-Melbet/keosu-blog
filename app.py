@@ -17,6 +17,8 @@ app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
 # Cấu hình từ file config.py
 app.config.from_object(Config)
+db.init_app(app)
+
 
 # Logging
 logging.basicConfig(level=logging.DEBUG)
