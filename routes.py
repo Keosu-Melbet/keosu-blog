@@ -10,6 +10,7 @@ from sqlalchemy import or_, desc
 from functools import wraps
 
 bp = Blueprint('main', __name__)
+
 @bp.route('/')
 def index():
     featured_articles = Article.query.filter_by(published=True, featured=True).limit(3).all()
@@ -47,6 +48,7 @@ def article_detail(slug):
                            article=article, 
                            related_articles=related_articles,
                            meta_tags=meta_tags)
+
 @bp.route('/chuyen-muc/<slug>')
 @bp.route('/chuyen-muc/<slug>/<int:page>')
 def category_articles_vn(slug, page=1):
@@ -67,65 +69,6 @@ def category_articles_vn(slug, page=1):
                            articles=articles,
                            meta_tags=meta_tags)
 @bp.route('/keo-thom')
-def keo_thom():
-    today = datetime.now().date()
-    tomorrow = today + timedelta(days=1)
-    
-    odds = BettingOdd.query.filter(
-        BettingOdd.match_date >= today,
-        BettingOdd.match_date < tomorrow
-    ).all()
-    
-    meta_tags = generate_meta_tags(
-        title="Kèo Thơm Hôm Nay - Tỷ Lệ Kèo Chính Xác | Kèo Sư",
-        description="Cập nhật kèo thơm hôm nay, tỷ lệ kèo bóng đá chính xác từ các nhà cái uy tín.",
-        keywords="kèo thơm hôm nay, tỷ lệ kèo hôm nay"
-    )
-    
-    return render_template('keo-thom.html', odds=odds, meta_tags=meta_tags)
-
-@bp.route('/lich-thi-dau')
-def lich_thi_dau():
-    date_str = request.args.get('date')
-    try:
-        selected_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else datetime.now().date()
-    except ValueError:
-        selected_date = datetime.now().date()
-    
-    next_date = selected_date + timedelta(days=1)
-    matches = Match.query.filter(
-        Match.match_date >= selected_date,
-        Match.match_date < next_date
-    ).order_by(Match.match_date).all()
-    
-    meta_tags = generate_meta_tags(
-        title="Lịch Thi Đấu Bóng Đá Hôm Nay | Kèo Sư",
-        description="Xem lịch thi đấu bóng đá hôm nay và những ngày tới.",
-        keywords="lịch thi đấu bóng đá, lịch thi đấu hôm nay"
-    )
-    
-    return render_template('lich-thi-dau.html', 
-                           matches=matches, 
-                           selected_date=selected_date,
-                           meta_tags=meta_tags)
-    @bp.route('/keo-thom')
-def keo_thom():
-    today = datetime.now().date()
-    tomorrow = today + timedelta(days=1)
-    
-    odds = BettingOdd.query.filter(
-        BettingOdd.match_date >= today,
-        BettingOdd.match_date < tomorrow
-    ).all()
-    
-    meta_tags = generate_meta_tags(
-        title="Kèo Thơm Hôm Nay - Tỷ Lệ Kèo Chính Xác | Kèo Sư",
-        description="Cập nhật kèo thơm hôm nay, tỷ lệ kèo bóng đá chính xác từ các nhà cái uy tín.",
-        keywords="kèo thơm hôm nay, tỷ lệ kèo hôm nay"
-    )
-    
-    return render_template('keo-thom.html', odds=odds, meta_tags=meta_tags)
-    @bp.route('/keo-thom')
 def keo_thom():
     today = datetime.now().date()
     tomorrow = today + timedelta(days=1)
@@ -194,6 +137,7 @@ def search():
                            articles=articles, 
                            query=query,
                            meta_tags=meta_tags)
+
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -269,21 +213,9 @@ def sitemap():
     static_pages = [
         {'url': url_for('main.index'), 'priority': '1.0'},
         {'url': url_for('main.keo_thom'), 'priority': '0.9'},
-        {'url': url_for('main.soi_keo'), 'priority': '0.9'},
-        {'url': url_for('main.meo_cuoc'), 'priority': '0.8'},
-@bp.route('/sitemap.xml')
-def sitemap():
-    pages = []
-    static_pages = [
-        {'url': url_for('main.index'), 'priority': '1.0'},
-        {'url': url_for('main.keo_thom'), 'priority': '0.9'},
-        {'url': url_for('main.soi_keo'), 'priority': '0.9'},
-        {'url': url_for('main.meo_cuoc'), 'priority': '0.8'},
-        {'url': url_for('main.tin_tuc'), 'priority': '0.8'},
-        {'url': url_for('main.lich_thi_dau'), 'priority': '0.7'},
-        {'url': url_for('main.ty_so_truc_tiep'), 'priority': '0.7'},
-        {'url': url_for('main.dai_ly_melbet'), 'priority': '0.6'},
-        {'url': url_for('main.lien_he'), 'priority': '0.5'},
+        {'url': url_for('main.lich_thi_dau'), 'priority': '0.8'},
+        {'url': url_for('main.search'), 'priority': '0.7'},
+        {'url': url_for('main.admin_login'), 'priority': '0.5'},
     ]
     
     articles = Article.query.filter_by(published=True).all()
@@ -312,6 +244,7 @@ def robots():
     response = make_response(render_template('robots.txt'))
     response.headers['Content-Type'] = 'text/plain'
     return response
+
 @bp.app_context_processor
 def inject_globals():
     categories = Category.query.all()
@@ -320,6 +253,7 @@ def inject_globals():
         'categories': categories,
         'search_form': search_form
     }
+
 @bp.app_errorhandler(404)
 def not_found_error(error):
     meta_tags = generate_meta_tags(
@@ -338,17 +272,3 @@ def internal_error(error):
         keywords="500, lỗi hệ thống"
     )
     return render_template('500.html', meta_tags=meta_tags), 500
-from flask import Flask
-from extensions import db
-from routes import bp as main_bp
-
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object('config.Config')
-
-    db.init_app(app)
-    app.register_blueprint(main_bp)
-
-    return app
-
-
