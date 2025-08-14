@@ -2,10 +2,8 @@ import os
 import logging
 from datetime import datetime
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.orm import DeclarativeBase
+from extensions import db
 from werkzeug.middleware.proxy_fix import ProxyFix
-
 from config import Config
 from routes import bp as main_bp
 
@@ -22,13 +20,6 @@ app.config.from_object(Config)
 
 # Logging
 logging.basicConfig(level=logging.DEBUG)
-
-# Khởi tạo SQLAlchemy với DeclarativeBase
-class Base(DeclarativeBase):
-    pass
-
-db = SQLAlchemy(model_class=Base)
-db.init_app(app)
 
 # Đăng ký blueprint chính
 app.register_blueprint(main_bp)
