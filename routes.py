@@ -1,5 +1,3 @@
-# routes.py
-
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify, make_response, session
 from extensions import db
 from models import Article, Category, BettingOdd, Match, User
@@ -11,6 +9,7 @@ from functools import wraps
 
 bp = Blueprint('main', __name__)
 
+# Trang chủ
 @bp.route('/')
 def index():
     featured_articles = Article.query.filter_by(published=True, featured=True).limit(3).all()
@@ -26,6 +25,8 @@ def index():
                            featured_articles=featured_articles,
                            recent_articles=recent_articles,
                            meta_tags=meta_tags)
+
+# Chi tiết bài viết
 @bp.route('/bai-viet/<slug>')
 def article_detail(slug):
     article = Article.query.filter_by(slug=slug, published=True).first_or_404()
@@ -49,6 +50,7 @@ def article_detail(slug):
                            related_articles=related_articles,
                            meta_tags=meta_tags)
 
+# Chuyên mục bài viết
 @bp.route('/chuyen-muc/<slug>')
 @bp.route('/chuyen-muc/<slug>/<int:page>')
 def category_articles_vn(slug, page=1):
@@ -68,6 +70,8 @@ def category_articles_vn(slug, page=1):
                            category=category, 
                            articles=articles,
                            meta_tags=meta_tags)
+
+# Kèo thơm hôm nay
 @bp.route('/keo-thom')
 def keo_thom():
     today = datetime.now().date()
@@ -86,6 +90,7 @@ def keo_thom():
     
     return render_template('keo-thom.html', odds=odds, meta_tags=meta_tags)
 
+# Lịch thi đấu
 @bp.route('/lich-thi-dau')
 def lich_thi_dau():
     date_str = request.args.get('date')
@@ -110,6 +115,8 @@ def lich_thi_dau():
                            matches=matches, 
                            selected_date=selected_date,
                            meta_tags=meta_tags)
+
+# Tìm kiếm bài viết
 @bp.route('/search')
 def search():
     query = request.args.get('q', '')
@@ -138,6 +145,7 @@ def search():
                            query=query,
                            meta_tags=meta_tags)
 
+# Admin login
 def admin_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
@@ -207,6 +215,7 @@ def manage_articles():
                             .paginate(page=page, per_page=20, error_out=False)
     
     return render_template('admin/manage_articles.html', articles=articles)
+
 @bp.route('/sitemap.xml')
 def sitemap():
     pages = []
