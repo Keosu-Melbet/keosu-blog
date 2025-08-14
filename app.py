@@ -10,6 +10,8 @@ from routes import bp as main_bp
 
 # Create the app
 app = Flask(__name__)
+print("✅ Flask app loaded") 
+
 app.secret_key = os.environ.get("SESSION_SECRET", "dev-key-change-in-production")
 app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
