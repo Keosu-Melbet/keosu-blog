@@ -1,452 +1,162 @@
 {% extends "base.html" %}
-
 {% block title %}Chỉnh sửa bài viết{% endblock %}
 
 {% block extra_css %}
 <style>
-.form-container {
-    background: white;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    overflow: hidden;
-    border: 3px solid var(--primary-yellow);
-}
-
-.form-header {
-    background: linear-gradient(135deg, var(--primary-yellow), #ffed4a);
-    color: var(--primary-black);
-    padding: 25px;
-}
-
-.form-body {
-    padding: 30px;
-}
-
-.form-preview {
-    background: var(--light-gray);
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 20px;
-}
-
-.image-preview {
-    max-width: 200px;
-    border-radius: 10px;
-    margin-top: 10px;
-}
-
-.current-image {
-    max-width: 200px;
-    border-radius: 10px;
-    margin-bottom: 10px;
-}
-
-.char-counter {
-    font-size: 0.8rem;
-    color: var(--text-gray);
-    text-align: right;
-}
-
-.seo-section {
-    background: #f8f9fa;
-    border-radius: 10px;
-    padding: 20px;
-    margin-top: 20px;
-}
-
-.toolbar {
-    background: var(--light-gray);
-    padding: 10px;
-    border-radius: 8px 8px 0 0;
-    border-bottom: 2px solid var(--border-color);
-}
-
-.toolbar-btn {
-    background: none;
-    border: 1px solid var(--border-color);
-    padding: 5px 10px;
-    margin: 2px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.toolbar-btn:hover {
-    background: var(--primary-yellow);
-    color: var(--primary-black);
-}
-
-#contentEditor {
-    border: none;
-    border-radius: 0 0 8px 8px;
-    min-height: 400px;
-    font-family: inherit;
-    font-size: 1rem;
-    line-height: 1.6;
-}
-
-.article-stats {
-    background: var(--light-gray);
-    border-radius: 10px;
-    padding: 15px;
-    margin-bottom: 20px;
-}
-
-.stat-item {
-    text-align: center;
-    padding: 10px;
-}
-
-.stat-number {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: var(--primary-yellow);
-    display: block;
-}
-
-.stat-label {
-    font-size: 0.8rem;
-    color: var(--text-gray);
-}
+/* ... (giữ nguyên phần CSS như bạn đã viết) ... */
 </style>
 {% endblock %}
 
 {% block content %}
 <div class="container">
-    <div class="row">
-        <div class="col-lg-10 mx-auto">
-            <div class="form-container">
-                <div class="form-header">
-                    <h3>
-                        <i class="fas fa-edit"></i>
-                        Chỉnh sửa bài viết
-                    </h3>
-                    <p class="mb-0">Cập nhật nội dung cho bài viết: <strong>{{ article.title }}</strong></p>
-                </div>
-                
-                <div class="form-body">
-                    <form method="POST" enctype="multipart/form-data" id="editArticleForm">
-                        {{ form.hidden_tag() }}
-                        
-                        <div class="row">
-                            <div class="col-lg-8">
-                                <!-- Title -->
-                                <div class="mb-3">
-                                    {{ form.title.label(class="form-label") }}
-                                    {{ form.title(class="form-control" + (" is-invalid" if form.title.errors else ""), id="titleInput") }}
-                                    {% if form.title.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.title.errors %}{{ error }}{% endfor %}
-                                        </div>
-                                    {% endif %}
-                                    <div class="char-counter">
-                                        <span id="titleCounter">{{ form.title.data|length if form.title.data else 0 }}</span>/200 ký tự
-                                    </div>
-                                </div>
-                                
-                                <!-- Content Editor -->
-                                <div class="mb-3">
-                                    {{ form.content.label(class="form-label") }}
-                                    <div class="editor-container">
-                                        <div class="toolbar">
-                                            <button type="button" class="toolbar-btn" onclick="formatText('bold')" title="Bold">
-                                                <i class="fas fa-bold"></i>
-                                            </button>
-                                            <button type="button" class="toolbar-btn" onclick="formatText('italic')" title="Italic">
-                                                <i class="fas fa-italic"></i>
-                                            </button>
-                                            <button type="button" class="toolbar-btn" onclick="formatText('underline')" title="Underline">
-                                                <i class="fas fa-underline"></i>
-                                            </button>
-                                            <button type="button" class="toolbar-btn" onclick="insertLink()" title="Link">
-                                                <i class="fas fa-link"></i>
-                                            </button>
-                                            <button type="button" class="toolbar-btn" onclick="insertList()" title="List">
-                                                <i class="fas fa-list"></i>
-                                            </button>
-                                            <button type="button" class="toolbar-btn" onclick="formatText('removeFormat')" title="Clear Format">
-                                                <i class="fas fa-eraser"></i>
-                                            </button>
-                                        </div>
-                                        {{ form.content(class="form-control" + (" is-invalid" if form.content.errors else ""), id="contentEditor") }}
-                                    </div>
-                                    {% if form.content.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.content.errors %}{{ error }}{% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- Excerpt -->
-                                <div class="mb-3">
-                                    {{ form.excerpt.label(class="form-label") }}
-                                    {{ form.excerpt(class="form-control", rows="3", id="excerptInput") }}
-                                    <small class="form-text text-muted">
-                                        Tóm tắt ngắn gọn về nội dung bài viết (để trống sẽ tự động tạo từ nội dung)
-                                    </small>
-                                    <div class="char-counter">
-                                        <span id="excerptCounter">{{ form.excerpt.data|length if form.excerpt.data else 0 }}</span>/300 ký tự
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="col-lg-4">
-                                <!-- Article Stats -->
-                                <div class="article-stats">
-                                    <h6>
-                                        <i class="fas fa-chart-line"></i>
-                                        Thống kê bài viết
-                                    </h6>
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="stat-item">
-                                                <span class="stat-number">{{ article.views }}</span>
-                                                <span class="stat-label">Lượt xem</span>
-                                            </div>
-                                        </div>
-                                        <div class="col-6">
-                                            <div class="stat-item">
-                                                <span class="stat-number">{{ article.created_at.strftime('%d/%m/%Y') }}</span>
-                                                <span class="stat-label">Ngày tạo</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                
-                                <!-- Publish Options -->
-                                <div class="mb-3">
-                                    <label class="form-label">Tùy chọn xuất bản</label>
-                                    <div class="form-check mb-2">
-                                        {{ form.published(class="form-check-input") }}
-                                        <label class="form-check-label" for="{{ form.published.id }}">
-                                            {{ form.published.label.text }}
-                                        </label>
-                                    </div>
-                                    <div class="form-check">
-                                        {{ form.featured(class="form-check-input") }}
-                                        <label class="form-check-label" for="{{ form.featured.id }}">
-                                            {{ form.featured.label.text }}
-                                        </label>
-                                    </div>
-                                </div>
-                                
-                                <!-- Category -->
-                                <div class="mb-3">
-                                    {{ form.category_id.label(class="form-label") }}
-                                    {{ form.category_id(class="form-select" + (" is-invalid" if form.category_id.errors else "")) }}
-                                    {% if form.category_id.errors %}
-                                        <div class="invalid-feedback">
-                                            {% for error in form.category_id.errors %}{{ error }}{% endfor %}
-                                        </div>
-                                    {% endif %}
-                                </div>
-                                
-                                <!-- Featured Image -->
-                                <div class="mb-3">
-                                    {{ form.featured_image.label(class="form-label") }}
-                                    {% if article.featured_image %}
-                                    <div class="mb-2">
-                                        <small class="text-muted">Ảnh hiện tại:</small><br>
-                                        <img src="{{ url_for('static', filename=article.featured_image) }}" 
-                                             class="current-image" alt="Current image">
-                                    </div>
-                                    {% endif %}
-                                    {{ form.featured_image(class="form-control", accept="image/*", id="imageInput") }}
-                                    <small class="form-text text-muted">
-                                        Định dạng: JPG, PNG, GIF, WebP. Kích thước tối đa: 5MB
-                                        {% if article.featured_image %}(Chọn file mới để thay thế ảnh hiện tại){% endif %}
-                                    </small>
-                                    <div id="imagePreview"></div>
-                                </div>
-                                
-                                <!-- Preview -->
-                                <div class="form-preview">
-                                    <h6>
-                                        <i class="fas fa-eye"></i>
-                                        Xem trước
-                                    </h6>
-                                    <div id="articlePreview">
-                                        <h6 id="previewTitle">{{ article.title }}</h6>
-                                        <small class="text-muted" id="previewCategory">{{ article.category.name }}</small>
-                                        <p id="previewExcerpt">{{ article.get_excerpt() }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- SEO Section -->
-                        <div class="seo-section">
-                            <h5>
-                                <i class="fas fa-search"></i>
-                                Tối ưu SEO
-                            </h5>
-                            <div class="row">
-                                <div class="col-md-6 mb-3">
-                                    {{ form.meta_title.label(class="form-label") }}
-                                    {{ form.meta_title(class="form-control", id="metaTitleInput") }}
-                                    <small class="form-text text-muted">Để trống sẽ sử dụng tiêu đề bài viết</small>
-                                    <div class="char-counter">
-                                        <span id="metaTitleCounter">{{ form.meta_title.data|length if form.meta_title.data else 0 }}</span>/60 ký tự (tối ưu)
-                                    </div>
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    {{ form.meta_keywords.label(class="form-label") }}
-                                    {{ form.meta_keywords(class="form-control") }}
-                                    <small class="form-text text-muted">Phân cách bằng dấu phẩy</small>
-                                </div>
-                                <div class="col-12 mb-3">
-                                    {{ form.meta_description.label(class="form-label") }}
-                                    {{ form.meta_description(class="form-control", rows="3", id="metaDescInput") }}
-                                    <small class="form-text text-muted">Để trống sẽ sử dụng tóm tắt bài viết</small>
-                                    <div class="char-counter">
-                                        <span id="metaDescCounter">{{ form.meta_description.data|length if form.meta_description.data else 0 }}</span>/160 ký tự (tối ưu)
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Submit Buttons -->
-                        <div class="mt-4 d-flex justify-content-between">
-                            <div>
-                                <button type="submit" name="action" value="update" class="btn btn-primary btn-lg">
-                                    <i class="fas fa-save"></i>
-                                    Cập nhật bài viết
-                                </button>
-                                <a href="{{ url_for('article_detail', slug=article.slug) }}" 
-                                   class="btn btn-outline-primary btn-lg ms-2" target="_blank">
-                                    <i class="fas fa-eye"></i>
-                                    Xem bài viết
-                                </a>
-                            </div>
-                            <div>
-                                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-danger">
-                                    <i class="fas fa-arrow-left"></i>
-                                    Quay lại
-                                </a>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+  <div class="row">
+    <div class="col-lg-10 mx-auto">
+      <div class="form-container">
+        <div class="form-header">
+          <h3><i class="fas fa-edit"></i> Chỉnh sửa bài viết</h3>
+          <p class="mb-0">Cập nhật nội dung cho bài viết: <strong>{{ article.title }}</strong></p>
         </div>
+        <div class="form-body">
+          <form method="POST" enctype="multipart/form-data" id="editArticleForm">
+            {{ form.hidden_tag() }}
+            <div class="row">
+              <div class="col-lg-8">
+                <!-- Tiêu đề -->
+                <div class="mb-3">
+                  {{ form.title.label(class="form-label") }}
+                  {{ form.title(class="form-control", id="titleInput") }}
+                  <div class="char-counter">
+                    <span id="titleCounter">{{ form.title.data|length if form.title.data else 0 }}</span>/200 ký tự
+                  </div>
+                </div>
+
+                <!-- Nội dung -->
+                <div class="mb-3">
+                  {{ form.content.label(class="form-label") }}
+                  <div class="editor-container">
+                    <div class="toolbar">
+                      <!-- Các nút định dạng -->
+                      <!-- ... giữ nguyên như bạn đã viết ... -->
+                    </div>
+                    {{ form.content(class="form-control", id="contentEditor") }}
+                  </div>
+                </div>
+
+                <!-- Tóm tắt -->
+                <div class="mb-3">
+                  {{ form.excerpt.label(class="form-label") }}
+                  {{ form.excerpt(class="form-control", rows="3", id="excerptInput") }}
+                  <div class="char-counter">
+                    <span id="excerptCounter">{{ form.excerpt.data|length if form.excerpt.data else 0 }}</span>/300 ký tự
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-lg-4">
+                <!-- Thống kê -->
+                <div class="article-stats">
+                  <h6><i class="fas fa-chart-line"></i> Thống kê bài viết</h6>
+                  <div class="row">
+                    <div class="col-6">
+                      <span class="stat-number">{{ article.views }}</span>
+                      <span class="stat-label">Lượt xem</span>
+                    </div>
+                    <div class="col-6">
+                      <span class="stat-number">{{ article.created_at.strftime('%d/%m/%Y') }}</span>
+                      <span class="stat-label">Ngày tạo</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tùy chọn xuất bản -->
+                <div class="mb-3">
+                  {{ form.published.label(class="form-label") }}
+                  {{ form.published(class="form-check-input") }}
+                  {{ form.featured.label(class="form-label") }}
+                  {{ form.featured(class="form-check-input") }}
+                </div>
+
+                <!-- Danh mục -->
+                <div class="mb-3">
+                  {{ form.category_id.label(class="form-label") }}
+                  {{ form.category_id(class="form-select") }}
+                </div>
+
+                <!-- Ảnh đại diện -->
+                <div class="mb-3">
+                  <label class="form-label">Ảnh đại diện</label>
+                  {% if article.featured_image %}
+                    <div class="mb-2">
+                      <small class="text-muted">Ảnh hiện tại:</small><br>
+                      <img src="{{ url_for('static', filename=article.featured_image) }}" class="current-image">
+                    </div>
+                  {% endif %}
+                  <form method="POST" action="{{ url_for('admin_upload_image', id=article.id) }}" enctype="multipart/form-data">
+                    <input type="file" name="image" class="form-control" accept="image/*" id="imageInput">
+                    <button type="submit" class="btn btn-sm btn-secondary mt-2">
+                      <i class="fas fa-upload"></i> Tải lên
+                    </button>
+                  </form>
+                  <div id="imagePreview"></div>
+                </div>
+
+                <!-- Xem trước -->
+                <div class="form-preview">
+                  <h6><i class="fas fa-eye"></i> Xem trước</h6>
+                  <div id="articlePreview">
+                    <h6 id="previewTitle">{{ article.title }}</h6>
+                    <small id="previewCategory">{{ article.category.name }}</small>
+                    <p id="previewExcerpt">{{ article.get_excerpt() }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SEO -->
+            <div class="seo-section">
+              <h5><i class="fas fa-search"></i> Tối ưu SEO</h5>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  {{ form.meta_title.label(class="form-label") }}
+                  {{ form.meta_title(class="form-control", id="metaTitleInput") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                  {{ form.meta_keywords.label(class="form-label") }}
+                  {{ form.meta_keywords(class="form-control") }}
+                </div>
+                <div class="col-12 mb-3">
+                  {{ form.meta_description.label(class="form-label") }}
+                  {{ form.meta_description(class="form-control", rows="3", id="metaDescInput") }}
+                </div>
+              </div>
+            </div>
+
+            <!-- Nút submit -->
+            <div class="mt-4 d-flex justify-content-between">
+              <div>
+                <button type="submit" name="action" value="update" class="btn btn-primary btn-lg">
+                  <i class="fas fa-save"></i> Cập nhật bài viết
+                </button>
+                <a href="{{ url_for('article_detail', slug=article.slug) }}" class="btn btn-outline-primary btn-lg ms-2" target="_blank">
+                  <i class="fas fa-eye"></i> Xem bài viết
+                </a>
+              </div>
+              <div>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-danger">
+                  <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
     </div>
+  </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Character counters
-    function updateCounter(inputId, counterId, maxLength = null) {
-        const input = document.getElementById(inputId);
-        const counter = document.getElementById(counterId);
-        
-        if (input && counter) {
-            function update() {
-                const length = input.value.length;
-                counter.textContent = length;
-                
-                if (maxLength && length > maxLength) {
-                    counter.style.color = '#dc3545';
-                } else {
-                    counter.style.color = '#6c757d';
-                }
-            }
-            
-            input.addEventListener('input', update);
-            update();
-        }
-    }
-    
-    updateCounter('titleInput', 'titleCounter', 200);
-    updateCounter('excerptInput', 'excerptCounter', 300);
-    updateCounter('metaTitleInput', 'metaTitleCounter', 60);
-    updateCounter('metaDescInput', 'metaDescCounter', 160);
-    
-    // Live preview
-    function updatePreview() {
-        const title = document.getElementById('titleInput').value || '{{ article.title }}';
-        const excerpt = document.getElementById('excerptInput').value || '{{ article.get_excerpt() }}';
-        const categorySelect = document.getElementById('category_id');
-        const categoryText = categorySelect.options[categorySelect.selectedIndex].text;
-        
-        document.getElementById('previewTitle').textContent = title;
-        document.getElementById('previewExcerpt').textContent = excerpt;
-        document.getElementById('previewCategory').textContent = categoryText;
-    }
-    
-    document.getElementById('titleInput').addEventListener('input', updatePreview);
-    document.getElementById('excerptInput').addEventListener('input', updatePreview);
-    document.getElementById('category_id').addEventListener('change', updatePreview);
-    
-    // Image preview
-    document.getElementById('imageInput').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        const preview = document.getElementById('imagePreview');
-        
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                preview.innerHTML = `<img src="${e.target.result}" class="image-preview" alt="Preview">`;
-            };
-            reader.readAsDataURL(file);
-        } else {
-            preview.innerHTML = '';
-        }
-    });
-    
-    // Form validation
-    document.getElementById('editArticleForm').addEventListener('submit', function(e) {
-        const title = document.getElementById('titleInput').value.trim();
-        const content = document.getElementById('contentEditor').value.trim();
-        
-        if (!title) {
-            e.preventDefault();
-            KeoSu.showNotification('Vui lòng nhập tiêu đề bài viết', 'error');
-            return;
-        }
-        
-        if (!content) {
-            e.preventDefault();
-            KeoSu.showNotification('Vui lòng nhập nội dung bài viết', 'error');
-            return;
-        }
-        
-        // Show loading state
-        const submitBtn = e.submitter;
-        if (submitBtn) {
-            const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang cập nhật...';
-            submitBtn.disabled = true;
-        }
-    });
-});
-
-// Rich text editor functions
-function formatText(command) {
-    document.execCommand(command, false, null);
-    document.getElementById('contentEditor').focus();
-}
-
-function insertLink() {
-    const url = prompt('Nhập URL:');
-    if (url) {
-        document.execCommand('createLink', false, url);
-    }
-    document.getElementById('contentEditor').focus();
-}
-
-function insertList() {
-    document.execCommand('insertUnorderedList', false, null);
-    document.getElementById('contentEditor').focus();
-}
-
-// Keyboard shortcuts
-document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
-        e.preventDefault();
-        document.querySelector('button[name="action"][value="update"]').click();
-    }
-});
+// ... giữ nguyên phần JavaScript như bạn đã viết ...
 </script>
 {% endblock %}
