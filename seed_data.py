@@ -7,6 +7,8 @@ import os
 import sys
 from datetime import datetime, timedelta
 import random
+from .extensions import db
+
 
 # Thêm thư mục hiện tại vào sys.path
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
