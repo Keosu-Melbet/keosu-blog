@@ -13,6 +13,13 @@ from seo_utils import generate_meta_tags
 from sqlalchemy import or_, desc
 from core import db
 from datetime import datetime, timedelta
+from flask import Blueprint
+
+main_bp = Blueprint('main', __name__)
+
+@main_bp.route('/')
+def index():
+    return 'Hello from main_bp!'
 
 app = Flask(__name__)
 @app.route('/')
@@ -240,4 +247,5 @@ def sitemap():
     response = make_response(xml)
     response.headers['Content-Type'] = 'application/xml'
     return response
+__all__ = ['main_bp']
 
