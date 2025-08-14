@@ -235,55 +235,6 @@ def category_articles(slug, page=1):
                          articles=articles,
                          meta_tags=meta_tags)
 
-# Admin routes
-@app.route('/admin/create-article', methods=['GET', 'POST'])
-@login_required
-def create_article():
-    """Create new article"""
-    form = ArticleForm()
-    
-    if form.validate_on_submit():
-        article = Article(
-            title=form.title.data,
-            content=form.content.data,
-            excerpt=form.excerpt.data,
-            category_id=form.category_id.data,
-            featured_image=form.featured_image.data,
-            featured=form.featured.data,
-            published=form.published.data,
-            meta_title=form.meta_title.data,
-            meta_description=form.meta_description.data,
-            meta_keywords=form.meta_keywords.data
-        )
-        
-        # Generate slug
-        article.slug = article.generate_slug()
-        
-        # Ensure unique slug
-        counter = 1
-        original_slug = article.slug
-        while Article.query.filter_by(slug=article.slug).first():
-            article.slug = f"{original_slug}-{counter}"
-            counter += 1
-        
-        db.session.add(article)
-        db.session.commit()
-        
-        flash('Bài viết đã được tạo thành công!', 'success')
-        return redirect(url_for('article_detail', slug=article.slug))
-    
-    return render_template('admin/create_article.html', form=form)
-
-@app.route('/admin/articles')
-@login_required
-def manage_articles():
-    """Manage articles"""
-    page = request.args.get('page', 1, type=int)
-    articles = Article.query.order_by(desc(Article.created_at))\
-                          .paginate(page=page, per_page=20, error_out=False)
-    
-    return render_template('admin/manage_articles.html', articles=articles)
-
 @app.route('/search')
 def search():
     """Search articles"""
