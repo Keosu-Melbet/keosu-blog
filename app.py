@@ -63,3 +63,9 @@ with app.app_context():
     except Exception as e:
         db.session.rollback()
         app.logger.error(f"Error creating default categories: {e}")
+
+@app.context_processor
+def inject_now():
+    from datetime import datetime
+    return {'now': datetime.now()}
+
