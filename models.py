@@ -1,34 +1,39 @@
 from extensions import db
 from datetime import datetime
-from sqlalchemy import func, event
+from sqlalchemy import event
 import re
 from werkzeug.security import generate_password_hash, check_password_hash
 
 class Category(db.Model):
+    __tablename__ = 'categories'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     slug = db.Column(db.String(100), unique=True, nullable=False)
     description = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     # Relationship
-    articles = db.relationship('Article', backref='category', lazy=True)
+    articles = db.relationship('Article', backref='category', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
         return f'<Category {self.name}>'
 
+
 class Article(db.Model):
+    __tablename__ = 'articles'
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     slug = db.Column(db.String(200), unique=True, nullable=False)
     content = db.Column(db.Text, nullable=False)
     excerpt = db.Column(db.Text)
-    featured_image = db.Column(db.String(255))  # Tên file ảnh
+    featured_image = db.Column(db.String(255))
     published = db.Column(db.Boolean, default=True)
     featured = db.Column(db.Boolean, default=False)
     views = db.Column(db.Integer, default=0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
 
     # SEO fields
     meta_title = db.Column(db.String(200))
@@ -36,39 +41,38 @@ class Article(db.Model):
     meta_keywords = db.Column(db.String(500))
 
     # Foreign key
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id', ondelete='CASCADE'), nullable=False)
 
     def __repr__(self):
         return f'<Article {self.title}>'
 
     def generate_slug(self):
-        """Generate URL-friendly slug from title"""
         slug = self.title.lower()
         slug = re.sub(r'\s+', '-', slug)
         slug = re.sub(r'[^\w\-]', '', slug)
         return slug
 
     def get_excerpt(self, length=150):
-        """Get article excerpt"""
         if self.excerpt:
             return self.excerpt
         text = re.sub(r'<[^>]+>', '', self.content)
         return text[:length] + '...' if len(text) > length else text
 
     def get_image_url(self):
-        """Return full URL path to featured image"""
         if self.featured_image:
             return f'/static/uploads/{self.featured_image}'
         return None
 
-# Tự động tạo slug nếu chưa có
+
 @event.listens_for(Article, 'before_insert')
 def generate_article_slug(mapper, connection, target):
     if not target.slug:
         target.slug = target.generate_slug()
 
+
 class BettingOdd(db.Model):
-    """Model for storing betting odds data"""
+    __tablename__ = 'betting_odds'
+
     id = db.Column(db.Integer, primary_key=True)
     match_name = db.Column(db.String(200), nullable=False)
     home_team = db.Column(db.String(100), nullable=False)
@@ -90,15 +94,17 @@ class BettingOdd(db.Model):
 
     # Recommendation
     recommendation = db.Column(db.String(200))
-    confidence = db.Column(db.Integer)  # 1-5 scale
+    confidence = db.Column(db.Integer)  # 1–5 scale
 
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self):
         return f'<BettingOdd {self.home_team} vs {self.away_team}>'
 
+
 class Match(db.Model):
-    """Model for match schedule"""
+    __tablename__ = 'matches'
+
     id = db.Column(db.Integer, primary_key=True)
     home_team = db.Column(db.String(100), nullable=False)
     away_team = db.Column(db.String(100), nullable=False)
@@ -108,16 +114,19 @@ class Match(db.Model):
     status = db.Column(db.String(20), default='scheduled')  # scheduled, live, finished
     home_score = db.Column(db.Integer)
     away_score = db.Column(db.Integer)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def __repr__(self):
         return f'<Match {self.home_team} vs {self.away_team}>'
 
+
 class User(db.Model):
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -127,4 +136,3 @@ class User(db.Model):
 
     def __repr__(self):
         return f'<User {self.username}>'
-
