@@ -1,11 +1,18 @@
 from flask import Flask
 from .extensions import db
-from .routes import *  # Import routes sau khi app được tạo
+from .routes import main_bp  # Giả sử bạn dùng Blueprint tên main_bp
 
-app = Flask(__name__)
-app.config.from_object('config.Config')
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object('config.Config')
 
-db.init_app(app)
+    db.init_app(app)
 
-with app.app_context():
-    db.create_all()
+    # Đăng ký Blueprint
+    app.register_blueprint(main_bp)
+
+    with app.app_context():
+        db.create_all()
+
+    return app
+
