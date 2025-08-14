@@ -7,3 +7,8 @@ supabase
 email-validator
 WTForms
 Flask-WTF
+flask_sqlalchemy
+flask_login
+
+
+
