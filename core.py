@@ -9,12 +9,14 @@ def create_app():
     # Cấu hình database (thay đổi nếu cần)
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
 
     # Khởi tạo db với app
     db.init_app(app)
 
     # Import và đăng ký các blueprint (nếu có)
-    from .routes import main_bp
+    from routes import main_bp
     app.register_blueprint(main_bp)
 
     return app
