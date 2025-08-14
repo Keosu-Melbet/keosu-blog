@@ -91,7 +91,7 @@ def soi_keo(page=1):
     """Soi kèo page"""
     category = Category.query.filter_by(slug='soi-keo').first()
     if not category:
-        flash('Chuyên mục không tồn tại', 'error')
+        flash(Chuyên mục không tồn tại', 'error )
         return redirect(url_for('index'))
     
     articles = Article.query.filter_by(category_id=category.id, published=True)\
@@ -236,6 +236,7 @@ def category_articles(slug, page=1):
 
 # Admin routes
 @app.route('/admin/create-article', methods=['GET', 'POST'])
+@login_required
 def create_article():
     """Create new article"""
     form = ArticleForm()
@@ -273,6 +274,7 @@ def create_article():
     return render_template('admin/create_article.html', form=form)
 
 @app.route('/admin/articles')
+@login_required
 def manage_articles():
     """Manage articles"""
     page = request.args.get('page', 1, type=int)
