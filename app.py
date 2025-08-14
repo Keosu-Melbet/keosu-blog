@@ -70,4 +70,4 @@ with app.app_context():
         
  # Optional: run app if this is the main file
 if __name__ == "__main__":
-    app.run(debug=True) 
+    app.run()
