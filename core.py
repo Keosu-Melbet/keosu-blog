@@ -3,6 +3,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from werkzeug.middleware.proxy_fix import ProxyFix
+from routes import main_bp
+app.register_blueprint(main_bp)
 
 db = SQLAlchemy()
 login_manager = LoginManager()
