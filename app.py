@@ -1,4 +1,5 @@
-import admin_upload  
+import admin_upload
+import routes
 import os
 import logging
 from flask import Flask, request, url_for
