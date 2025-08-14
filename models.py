@@ -1,4 +1,5 @@
 from core import app, db
+from flask_login import UserMixin
 from datetime import datetime
 from sqlalchemy import func
 import re
@@ -105,3 +106,10 @@ class Match(db.Model):
     
     def __repr__(self):
         return f'<Match {self.home_team} vs {self.away_team}>'
+
+
+class Admin(db.Model, UserMixin):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)
+
