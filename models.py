@@ -1,4 +1,4 @@
-from app import db
+from core import app, db
 from datetime import datetime
 from sqlalchemy import func
 import re
