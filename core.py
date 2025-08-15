@@ -3,6 +3,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from extensions import db, login_manager
 from routes import main_bp
 from models import Category
+db.create_all()
 
 def create_app():
     app = Flask(__name__)
