@@ -57,9 +57,11 @@ with app.app_context():
         {'name': 'Lịch thi đấu', 'slug': 'lich-thi-dau', 'description': 'Lịch thi đấu các giải'},
     ]
 
+    with db.session.no_autoflush:
     for cat_data in default_categories:
         if not Category.query.filter_by(slug=cat_data['slug']).first():
             db.session.add(Category(**cat_data))
+
 
     try:
         db.session.commit()
