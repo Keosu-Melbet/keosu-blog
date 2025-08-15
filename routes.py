@@ -15,6 +15,11 @@ from core import db
 from datetime import datetime, timedelta
 from flask import Blueprint
 from supabase_client import supabase
+from flask import render_template
+from models import Article
+
+
+
 
 main_bp = Blueprint('main', __name__)
 
@@ -218,5 +223,9 @@ def add_category():
         return redirect(url_for('main.admin_dashboard'))
 
     return render_template('add_category.html')
+    @app.route('/admin/edit-article/<int:id>', methods=['GET'])
+def admin_edit_article(id):
+    article = Article.query.get_or_404(id)
+    return render_template('admin_edit_article.html', article=article)
 
     
