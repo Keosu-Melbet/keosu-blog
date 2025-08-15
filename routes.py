@@ -194,4 +194,29 @@ def create_article():
             featured=form.featured.data,
             published=form.published.data,
     )
+
+@main_bp.route('/admin/add-category', methods=['GET', 'POST'])
+@login_required
+def add_category():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        if not name:
+            flash('Vui lòng nhập tên chuyên mục.', 'danger')
+            return redirect(url_for('main.add_category'))
+
+        from seo_utils import generate_slug
+        slug = generate_slug(name)
+
+        if Category.query.filter_by(slug=slug).first():
+            flash('Chuyên mục đã tồn tại.', 'warning')
+            return redirect(url_for('main.add_category'))
+
+        new_category = Category(name=name, slug=slug)
+        db.session.add(new_category)
+        db.session.commit()
+        flash('Thêm chuyên mục thành công!', 'success')
+        return redirect(url_for('main.admin_dashboard'))
+
+    return render_template('add_category.html')
+
     
