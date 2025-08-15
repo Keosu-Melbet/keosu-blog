@@ -3,7 +3,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from extensions import db, login_manager
 from routes import main_bp
 from models import Category
-db.create_all()
+
 
 def create_app():
     app = Flask(__name__)
@@ -24,6 +24,7 @@ def create_app():
     # Đăng ký blueprint và khởi tạo dữ liệu
     with app.app_context():
         app.register_blueprint(main_bp)
+        db.create_all()
         
         # Tạo chuyên mục mặc định nếu chưa có
         default_categories = [
