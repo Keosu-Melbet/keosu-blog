@@ -1,5 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, SelectField, BooleanField, SubmitField
+from wtforms import (
+    StringField, TextAreaField, SelectField,
+    BooleanField, SubmitField
+)
 from wtforms.validators import DataRequired, Length, Email
 from models import Category
 
@@ -11,18 +14,22 @@ class ArticleForm(FlaskForm):
     featured_image = StringField('Ảnh đại diện (URL)')
     featured = BooleanField('Bài viết nổi bật')
     published = BooleanField('Xuất bản', default=True)
-    
+
     # SEO fields
     meta_title = StringField('Meta Title', validators=[Length(max=200)])
     meta_description = TextAreaField('Meta Description', validators=[Length(max=300)])
     meta_keywords = StringField('Meta Keywords', validators=[Length(max=500)])
-    
+
     submit = SubmitField('Lưu bài viết')
-    
+
     def __init__(self, *args, **kwargs):
-        super(ArticleForm, self).__init__(*args, **kwargs)
-        # Populate category choices
-        self.category_id.choices = [(cat.id, cat.name) for cat in Category.query.all()]
+        super().__init__(*args, **kwargs)
+        try:
+            self.category_id.choices = [
+                (cat.id, cat.name) for cat in Category.query.order_by(Category.name).all()
+            ]
+        except Exception:
+            self.category_id.choices = []
 
 class ContactForm(FlaskForm):
     name = StringField('Họ tên', validators=[DataRequired(), Length(max=100)])
