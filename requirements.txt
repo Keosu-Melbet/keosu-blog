@@ -8,3 +8,5 @@ supabase
 email-validator
 WTForms
 Flask-WTF
+python-dotenv>=1.0.0
+
