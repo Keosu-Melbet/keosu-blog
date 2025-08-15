@@ -9,6 +9,9 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from datetime import datetime
 from models import Admin
 from core import create_app, db, login_manager
+from supabase_client import supabase
+
+supabase.table("users").insert({...}).execute()
 
 app = create_app()
 
