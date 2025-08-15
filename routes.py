@@ -1,9 +1,9 @@
 from flask import (
-    Flask, render_template, request, redirect, url_for, session
+    render_template, request, redirect, url_for, session,
     flash, jsonify, make_response
 )
 from flask_login import (
-    LoginManager, login_user, login_required,
+    login_user, login_required,
     logout_user, current_user
 )
 from models import Admin, Article, Category, BettingOdd, Match
@@ -14,15 +14,11 @@ from sqlalchemy import or_, desc
 from core import db
 from datetime import datetime, timedelta
 from flask import Blueprint
+from supabase_client import supabase
 
 main_bp = Blueprint('main', __name__)
 
 @main_bp.route('/')
-def index():
-    return 'Hello from main_bp!'
-
-app = Flask(__name__)
-@app.route('/')
 def index():
     featured = Article.query.filter_by(published=True, featured=True).limit(3).all()
     recent = Article.query.filter_by(published=True).order_by(desc(Article.created_at)).limit(6).all()
@@ -34,13 +30,12 @@ def index():
     )
     return render_template('index.html', featured_articles=featured, recent_articles=recent, meta_tags=meta_tags)
 
-@app.route('/login', methods=['GET', 'POST'])
+@main_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
 
-        # Kiểm tra thông tin đăng nhập từ Supabase
         data = supabase.table("admins").select("*").eq("email", email).eq("password", password).execute()
         if data.data:
             session['user'] = email
@@ -50,15 +45,12 @@ def login():
 
     return render_template('login.html')
 
-
-# Test route để kiểm tra Supabase
-@app.route("/test")
+@main_bp.route("/test")
 def test():
     data = supabase.table("admins").select("*").execute()
     return str(data.data)
 
-
-@app.route('/keo-thom')
+@main_bp.route('/keo-thom')
 def keo_thom():
     today = datetime.now().date()
     tomorrow = today + timedelta(days=1)
@@ -75,8 +67,7 @@ def keo_thom():
     )
     return render_template('keo-thom.html', odds=odds, meta_tags=meta_tags)
 
-
-@app.route('/lich-thi-dau')
+@main_bp.route('/lich-thi-dau')
 def lich_thi_dau():
     date_str = request.args.get('date')
     try:
@@ -97,8 +88,7 @@ def lich_thi_dau():
     )
     return render_template('lich-thi-dau.html', matches=matches, selected_date=selected_date, meta_tags=meta_tags)
 
-
-@app.route('/ty-so-truc-tiep')
+@main_bp.route('/ty-so-truc-tiep')
 def ty_so_truc_tiep():
     meta_tags = generate_meta_tags(
         title="Tỷ Số Trực Tiếp | Kèo Sư",
@@ -107,7 +97,7 @@ def ty_so_truc_tiep():
     )
     return render_template('ty-so-truc-tiep.html', meta_tags=meta_tags)
 
-@app.route('/bai-viet/<slug>')
+@main_bp.route('/bai-viet/<slug>')
 def article_detail(slug):
     article = Article.query.filter_by(slug=slug, published=True).first_or_404()
     article.views += 1
@@ -126,9 +116,8 @@ def article_detail(slug):
     )
     return render_template('article.html', article=article, related_articles=related, meta_tags=meta_tags)
 
-
-@app.route('/chuyen-muc/<slug>')
-@app.route('/chuyen-muc/<slug>/<int:page>')
+@main_bp.route('/chuyen-muc/<slug>')
+@main_bp.route('/chuyen-muc/<slug>/<int:page>')
 def category_articles(slug, page=1):
     category = Category.query.filter_by(slug=slug).first_or_404()
     articles = Article.query.filter_by(category_id=category.id, published=True)\
@@ -142,8 +131,7 @@ def category_articles(slug, page=1):
     )
     return render_template('category.html', category=category, articles=articles, meta_tags=meta_tags)
 
-
-@app.route('/search')
+@main_bp.route('/search')
 def search():
     query = request.args.get('q', '')
     page = request.args.get('page', 1, type=int)
@@ -165,7 +153,8 @@ def search():
         keywords=f"tìm kiếm, {query}" if query else "tìm kiếm"
     )
     return render_template('search.html', articles=articles, query=query, meta_tags=meta_tags)
-@app.route('/admin/login', methods=['GET', 'POST'])
+
+@main_bp.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
         username = request.form['username']
@@ -173,26 +162,23 @@ def admin_login():
         admin = Admin.query.filter_by(username=username).first()
         if admin and check_password_hash(admin.password, password):
             login_user(admin)
-            return redirect(url_for('admin_dashboard'))
+            return redirect(url_for('main.admin_dashboard'))
         flash('Sai tài khoản hoặc mật khẩu', 'danger')
     return render_template('login.html')
 
-
-@app.route('/admin/logout')
+@main_bp.route('/admin/logout')
 @login_required
 def admin_logout():
     logout_user()
-    return redirect(url_for('admin_login'))
+    return redirect(url_for('main.admin_login'))
 
-
-@app.route('/admin/dashboard')
+@main_bp.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
     total_articles = Article.query.count()
     return render_template('dashboard.html', total_articles=total_articles)
 
-
-@app.route('/admin/create-article', methods=['GET', 'POST'])
+@main_bp.route('/admin/create-article', methods=['GET', 'POST'])
 @login_required
 def create_article():
     form = ArticleForm()
@@ -207,68 +193,3 @@ def create_article():
             featured_image=form.featured_image.data,
             featured=form.featured.data,
             published=form.published.data,
-            meta_title=form.meta_title.data,
-            meta_description=form.meta_description.data,
-            meta_keywords=form.meta_keywords.data,
-            created_at=datetime.utcnow()
-        )
-        article.slug = article.generate_slug()
-
-        # Đảm bảo slug là duy nhất
-        original_slug = article.slug
-        counter = 1
-        while Article.query.filter_by(slug=article.slug).first():
-            article.slug = f"{original_slug}-{counter}"
-            counter += 1
-
-        db.session.add(article)
-        db.session.commit()
-        flash('Bài viết đã được tạo thành công!', 'success')
-        return redirect(url_for('article_detail', slug=article.slug))
-
-    return render_template('admin/create_article.html', form=form)
-
-
-@app.route('/admin/articles')
-@login_required
-def manage_articles():
-    page = request.args.get('page', 1, type=int)
-    articles = Article.query.order_by(desc(Article.created_at))\
-        .paginate(page=page, per_page=20, error_out=False)
-    return render_template('admin/manage_articles.html', articles=articles)
-@app.route('/sitemap.xml')
-def sitemap():
-    pages = []
-
-    static_pages = [
-        {'url': url_for('index'), 'priority': '1.0'},
-        {'url': url_for('keo_thom'), 'priority': '0.9'},
-        {'url': url_for('lich_thi_dau'), 'priority': '0.8'},
-        {'url': url_for('ty_so_truc_tiep'), 'priority': '0.8'},
-        {'url': url_for('admin_login'), 'priority': '0.3'},
-    ]
-
-    # Thêm các trang tĩnh vào danh sách
-    for page in static_pages:
-        pages.append({
-            'url': page['url'],
-            'lastmod': datetime.utcnow().strftime('%Y-%m-%d'),
-            'priority': page['priority']
-        })
-
-    # Thêm các bài viết đã publish
-    articles = Article.query.filter_by(published=True).all()
-    for article in articles:
-        pages.append({
-            'url': url_for('article_detail', slug=article.slug, _external=True),
-            'lastmod': article.updated_at.strftime('%Y-%m-%d') if article.updated_at else '',
-            'priority': '0.7'
-        })
-
-    # Render XML từ template
-    xml = render_template('sitemap_template.xml', pages=pages)
-    response = make_response(xml)
-    response.headers['Content-Type'] = 'application/xml'
-    return response
-__all__ = ['main_bp']
-
