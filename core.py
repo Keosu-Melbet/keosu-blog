@@ -1,34 +1,29 @@
-# core.py
-from extensions import db
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
 from werkzeug.middleware.proxy_fix import ProxyFix
+from extensions import db, login_manager
 from routes import main_bp
-app.register_blueprint(main_bp)
-
-db = SQLAlchemy()
-login_manager = LoginManager()
+from models import Category
 
 def create_app():
     app = Flask(__name__)
+
+    # Cấu hình ứng dụng
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///keosu.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = 'static/uploads'
-    app.secret_key = 'your-secret-key'  # Thay bằng biến môi trường khi deploy
+    app.secret_key = 'your-secret-key'  # Nên dùng biến môi trường khi deploy
 
+    # Xử lý proxy headers (Render, Heroku, v.v.)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
+    # Khởi tạo extensions
     db.init_app(app)
     login_manager.init_app(app)
 
+    # Đăng ký blueprint và khởi tạo dữ liệu
     with app.app_context():
-        from models import Category
-        from routes import main_bp
         app.register_blueprint(main_bp)
-
-        db.create_all()
-
+        
         # Tạo chuyên mục mặc định nếu chưa có
         default_categories = [
             {'name': 'Kèo thơm', 'slug': 'keo-thom', 'description': 'Những kèo thơm hôm nay'},
