@@ -1,12 +1,13 @@
 import os
 import logging
 from datetime import datetime
-from flask import Flask, session
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
-from routes import app_routes
+
 from core import create_app, db, login_manager
+from routes import app_routes
 from supabase_client import supabase
 
 # Logging setup
@@ -32,6 +33,9 @@ app.config["SQLALCHEMY_ENGINE_OPTIONS"] = {
 db = SQLAlchemy(model_class=Base)
 db.init_app(app)
 
+# Register routes
+app.register_blueprint(app_routes)
+
 # Template global: current year
 @app.template_global()
 def get_current_year():
@@ -39,9 +43,8 @@ def get_current_year():
 
 # App context setup
 with app.app_context():
-    # Import models and routes
+    # Import models and extra routes
     import models
-    import routes
     import admin_upload
 
     # Create tables
@@ -57,18 +60,16 @@ with app.app_context():
         {'name': 'Lịch thi đấu', 'slug': 'lich-thi-dau', 'description': 'Lịch thi đấu các giải'},
     ]
 
- with db.session.no_autoflush:
-    for cat_data in default_categories:
-        if not Category.query.filter_by(slug=cat_data['slug']).first():
-            db.session.add(Category(**cat_data))
+    with db.session.no_autoflush:
+        for cat_data in default_categories:
+            if not Category.query.filter_by(slug=cat_data['slug']).first():
+                db.session.add(Category(**cat_data))
 
-
-    try:
-        db.session.commit()
-    except Exception as e:
-        db.session.rollback()
-        app.logger.error(f"Error creating default categories: {e}")
-
+        try:
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            app.logger.error(f"Error creating default categories: {e}")
 
 # Run app
 if __name__ == "__main__":
