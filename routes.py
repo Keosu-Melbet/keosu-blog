@@ -1,5 +1,5 @@
 from flask import (
-    Flask, render_template, request, redirect, url_for,
+    Flask, render_template, request, redirect, url_for, session
     flash, jsonify, make_response
 )
 from flask_login import (
