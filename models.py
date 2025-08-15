@@ -1,12 +1,16 @@
 from extensions import db
 from flask_login import UserMixin
 from datetime import datetime
+from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.event import listens_for
 import re
 
 # -----------------------------
 # 📁 Category Model
 # -----------------------------
 class Category(db.Model):
+    __tablename__ = 'categories'
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     slug = db.Column(db.String(100), unique=True, nullable=False)
@@ -29,6 +33,8 @@ class Category(db.Model):
 # 📝 Article Model
 # -----------------------------
 class Article(db.Model):
+    __tablename__ = 'articles'
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     slug = db.Column(db.String(200), unique=True, nullable=False)
@@ -47,7 +53,7 @@ class Article(db.Model):
     meta_keywords = db.Column(db.String(500))
 
     # Foreign key
-    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
 
     def __repr__(self):
         return f'<Article {self.title}>'
@@ -62,12 +68,14 @@ class Article(db.Model):
         if self.excerpt:
             return self.excerpt
         text = re.sub(r'<[^>]+>', '', self.content)
-        return text[:length] + '...' if len(text) > length else text
+        return text[:length].rstrip() + '...' if len(text) > length else text
 
 # -----------------------------
 # 🎯 BettingOdd Model
 # -----------------------------
 class BettingOdd(db.Model):
+    __tablename__ = 'betting_odds'
+
     id = db.Column(db.Integer, primary_key=True)
     match_name = db.Column(db.String(200), nullable=False)
     home_team = db.Column(db.String(100), nullable=False)
@@ -100,6 +108,8 @@ class BettingOdd(db.Model):
 # 🗓️ Match Model
 # -----------------------------
 class Match(db.Model):
+    __tablename__ = 'matches'
+
     id = db.Column(db.Integer, primary_key=True)
     home_team = db.Column(db.String(100), nullable=False)
     away_team = db.Column(db.String(100), nullable=False)
@@ -118,9 +128,28 @@ class Match(db.Model):
 # 🔐 Admin Model
 # -----------------------------
 class Admin(db.Model, UserMixin):
+    __tablename__ = 'admins'
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
-    password = db.Column(db.String(200), nullable=False)
+    password_hash = db.Column(db.String(200), nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return f'<Admin {self.username}>'
+
+# -----------------------------
+# ⚙️ Auto-slug generation
+# -----------------------------
+@listens_for(Category, 'before_insert')
+def generate_category_slug(mapper, connection, target):
+    target.slug = target.generate_slug()
+
+@listens_for(Article, 'before_insert')
+def generate_article_slug(mapper, connection, target):
+    target.slug = target.generate_slug()
