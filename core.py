@@ -1,10 +1,14 @@
 import os
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
+from dotenv import load_dotenv
+
+# Nạp biến môi trường khi chạy local
+load_dotenv()
+
 from extensions import db, login_manager
 from routes import main_bp
 from models import Category
-from admin_routes import admin_bp  # Nếu bạn có file này
 
 def create_app():
     # Khởi tạo Flask app
@@ -14,7 +18,7 @@ def create_app():
     app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///keosu.db"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["UPLOAD_FOLDER"] = "static/uploads"
-    app.secret_key = os.getenv("SECRET_KEY", "default-secret-key")  # Dùng biến môi trường
+    app.secret_key = os.getenv("SECRET_KEY", "default-secret-key")
 
     # Xử lý proxy headers (Render, Heroku, v.v.)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
@@ -25,7 +29,6 @@ def create_app():
 
     # Đăng ký blueprint
     app.register_blueprint(main_bp)
-    app.register_blueprint(admin_bp)
 
     # Khởi tạo dữ liệu mặc định
     with app.app_context():
