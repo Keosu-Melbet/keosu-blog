@@ -1,26 +1,31 @@
 import os
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
-from dotenv import load_dotenv
 
-# Nạp biến môi trường khi chạy local
-load_dotenv()
+# Nạp biến môi trường nếu có
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 from extensions import db, login_manager
 from routes import main_bp
 from models import Category
 
 def create_app():
-    # Khởi tạo Flask app
     app = Flask(__name__)
 
     # Cấu hình ứng dụng
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///keosu.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL", "sqlite:///keosu.db")
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["UPLOAD_FOLDER"] = "static/uploads"
     app.secret_key = os.getenv("SECRET_KEY", "default-secret-key")
 
-    # Xử lý proxy headers (Render, Heroku, v.v.)
+    # Đảm bảo thư mục upload tồn tại
+    os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
+
+    # Xử lý proxy headers
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     # Khởi tạo extensions
@@ -38,7 +43,6 @@ def create_app():
     return app
 
 def _initialize_default_categories(app):
-    """Tạo chuyên mục mặc định nếu chưa có"""
     default_categories = ["Ăn uống", "Giải trí", "Học tập", "Mua sắm", "Khác"]
     created = False
 
