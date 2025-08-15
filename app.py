@@ -69,11 +69,6 @@ with app.app_context():
         db.session.rollback()
         app.logger.error(f"Error creating default categories: {e}")
 
-# Test route để kiểm tra Supabase
-@app.route("/test")
-def test():
-    data = supabase.table("admins").select("*").execute()
-    return str(data.data)
 
 # Run app
 if __name__ == "__main__":
