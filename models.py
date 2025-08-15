@@ -1,4 +1,5 @@
-from core import db
+# models.py
+from extensions import db
 from flask_login import UserMixin
 from datetime import datetime
 import re
