@@ -3,8 +3,10 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 from extensions import db, login_manager
 from routes import main_bp
 from models import Category
+from admin_routes import admin_bp
 
 def create_app():
+    app.register_blueprint(admin_bp)
     app = Flask(__name__)
 
     # Cấu hình ứng dụng
