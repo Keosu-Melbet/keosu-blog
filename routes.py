@@ -34,6 +34,29 @@ def index():
     )
     return render_template('index.html', featured_articles=featured, recent_articles=recent, meta_tags=meta_tags)
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form.get('email')
+        password = request.form.get('password')
+
+        # Kiểm tra thông tin đăng nhập từ Supabase
+        data = supabase.table("admins").select("*").eq("email", email).eq("password", password).execute()
+        if data.data:
+            session['user'] = email
+            return redirect('/dashboard')
+        else:
+            return "Sai thông tin đăng nhập", 401
+
+    return render_template('login.html')
+
+
+# Test route để kiểm tra Supabase
+@app.route("/test")
+def test():
+    data = supabase.table("admins").select("*").execute()
+    return str(data.data)
+
 
 @app.route('/keo-thom')
 def keo_thom():
