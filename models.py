@@ -117,3 +117,14 @@ class Admin(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
 
+
+class Category(db.Model):
+    # ... các trường khác ...
+    
+    def generate_slug(self):
+        slug = self.name.lower()
+        slug = re.sub(r'\s+', '-', slug)
+        slug = re.sub(r'[^\w\-]', '', slug)
+        return slug
+
+
