@@ -1,11 +1,11 @@
 import os
 import logging
 from datetime import datetime
-from flask import Flask
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 from werkzeug.middleware.proxy_fix import ProxyFix
-
+from routes import app_routes
 from core import create_app, db, login_manager
 from supabase_client import supabase
 
