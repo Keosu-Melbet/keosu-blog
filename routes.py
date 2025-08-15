@@ -193,3 +193,5 @@ def create_article():
             featured_image=form.featured_image.data,
             featured=form.featured.data,
             published=form.published.data,
+    )
+    
