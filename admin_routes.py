@@ -1,6 +1,8 @@
+# admin_routes.py
+
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
-from models import Admin, Article, Category
+from models import Article, Category
 from forms import ArticleForm
 from core import db
 from seo_utils import generate_slug
@@ -11,7 +13,7 @@ admin_bp = Blueprint('admin', __name__, url_prefix='/admin')
 @login_required
 def dashboard():
     total_articles = Article.query.count()
-    return render_template('dashboard.html', total_articles=total_articles)
+    return render_template('admin/dashboard.html', total_articles=total_articles)
 
 @admin_bp.route('/create-article', methods=['GET', 'POST'])
 @login_required
@@ -31,16 +33,25 @@ def create_article():
         )
         db.session.add(article)
         db.session.commit()
-        flash('Bài viết đã được tạo thành công!', 'success')
+        flash('✅ Bài viết đã được tạo thành công!', 'success')
         return redirect(url_for('admin.dashboard'))
 
-    return render_template('create_article.html', form=form)
+    return render_template('admin/create_article.html', form=form)
 
-@admin_bp.route('/edit-article/<int:id>', methods=['GET'])
+@admin_bp.route('/edit-article/<int:id>', methods=['GET', 'POST'])
 @login_required
 def edit_article(id):
     article = Article.query.get_or_404(id)
-    return render_template('admin_edit_article.html', article=article)
+    form = ArticleForm(obj=article)
+    form.category_id.choices = [(c.id, c.name) for c in Category.query.all()]
+
+    if request.method == 'POST' and form.validate_on_submit():
+        form.populate_obj(article)
+        db.session.commit()
+        flash('✅ Bài viết đã được cập nhật!', 'success')
+        return redirect(url_for('admin.dashboard'))
+
+    return render_template('admin/edit_article.html', form=form, article=article)
 
 @admin_bp.route('/add-category', methods=['GET', 'POST'])
 @login_required
@@ -48,18 +59,18 @@ def add_category():
     if request.method == 'POST':
         name = request.form.get('name')
         if not name:
-            flash('Vui lòng nhập tên chuyên mục.', 'danger')
+            flash('⚠️ Vui lòng nhập tên chuyên mục.', 'danger')
             return redirect(url_for('admin.add_category'))
 
         slug = generate_slug(name)
         if Category.query.filter_by(slug=slug).first():
-            flash('Chuyên mục đã tồn tại.', 'warning')
+            flash('⚠️ Chuyên mục đã tồn tại.', 'warning')
             return redirect(url_for('admin.add_category'))
 
         new_category = Category(name=name, slug=slug)
         db.session.add(new_category)
         db.session.commit()
-        flash('Thêm chuyên mục thành công!', 'success')
+        flash('✅ Thêm chuyên mục thành công!', 'success')
         return redirect(url_for('admin.dashboard'))
 
-    return render_template('add_category.html')
+    return render_template('admin/add_category.html')
