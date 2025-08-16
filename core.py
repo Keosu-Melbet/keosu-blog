@@ -1,4 +1,5 @@
 import os
+import logging
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -48,6 +49,10 @@ def create_app():
     with app.app_context():
         db.create_all()
         _initialize_default_categories(app)
+
+    # 📋 Logging cơ bản
+    logging.basicConfig(level=logging.INFO)
+    app.logger.info("✅ Ứng dụng Flask đã khởi tạo thành công.")
 
     return app
 
