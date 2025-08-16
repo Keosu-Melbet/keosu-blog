@@ -2,6 +2,7 @@ import os
 import logging
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
+from extensions import db, login_manager
 
 # 🔐 Load biến môi trường từ .env nếu có
 try:
