@@ -5,8 +5,9 @@ from flask import (
 from sqlalchemy import or_, desc
 from datetime import datetime, timedelta
 from models import Article, Category, BettingOdd, Match
-from seo_utils import generate_meta_tags
+from seo_utils import generate_meta_tags, create_structured_data
 from supabase_client import supabase
+from core import db
 
 main_bp = Blueprint('main', __name__)
 
@@ -18,9 +19,21 @@ def index():
     meta_tags = generate_meta_tags(
         title="Kèo Sư - Website Kèo Bóng Đá Chuyên Nghiệp",
         description="Kèo Sư cung cấp tỷ lệ kèo, soi kèo, mẹo cược bóng đá chính xác.",
-        keywords="kèo bóng đá, tỷ lệ kèo, soi kèo"
+        keywords=["kèo bóng đá", "tỷ lệ kèo", "soi kèo"]
     )
-    return render_template('index.html', featured_articles=featured, recent_articles=recent, meta_tags=meta_tags)
+
+    structured_data = create_structured_data("WebSite", {
+        "name": "Kèo Sư",
+        "url": request.url,
+        "description": meta_tags["description"]
+    })
+
+    return render_template('index.html',
+        featured_articles=featured,
+        recent_articles=recent,
+        meta_tags=meta_tags,
+        structured_data=structured_data
+    )
 
 @main_bp.route('/login', methods=['GET', 'POST'])
 def login():
@@ -55,9 +68,16 @@ def keo_thom():
     meta_tags = generate_meta_tags(
         title="Kèo Thơm Hôm Nay | Kèo Sư",
         description="Cập nhật kèo thơm hôm nay, tỷ lệ kèo bóng đá chính xác.",
-        keywords="kèo thơm hôm nay, tỷ lệ kèo"
+        keywords=["kèo thơm hôm nay", "tỷ lệ kèo"]
     )
-    return render_template('keo-thom.html', odds=odds, meta_tags=meta_tags)
+
+    structured_data = create_structured_data("CollectionPage", {
+        "name": "Kèo Thơm",
+        "description": meta_tags["description"],
+        "url": request.url
+    })
+
+    return render_template('keo-thom.html', odds=odds, meta_tags=meta_tags, structured_data=structured_data)
 
 @main_bp.route('/lich-thi-dau')
 def lich_thi_dau():
@@ -76,24 +96,46 @@ def lich_thi_dau():
     meta_tags = generate_meta_tags(
         title="Lịch Thi Đấu Bóng Đá | Kèo Sư",
         description="Xem lịch thi đấu bóng đá hôm nay và những ngày tới.",
-        keywords="lịch thi đấu bóng đá, lịch thi đấu hôm nay"
+        keywords=["lịch thi đấu bóng đá", "lịch thi đấu hôm nay"]
     )
-    return render_template('lich-thi-dau.html', matches=matches, selected_date=selected_date, meta_tags=meta_tags)
+
+    structured_data = create_structured_data("Event", {
+        "name": "Lịch Thi Đấu",
+        "startDate": str(selected_date),
+        "description": meta_tags["description"],
+        "url": request.url
+    })
+
+    return render_template('lich-thi-dau.html',
+        matches=matches,
+        selected_date=selected_date,
+        meta_tags=meta_tags,
+        structured_data=structured_data
+    )
 
 @main_bp.route('/ty-so-truc-tiep')
 def ty_so_truc_tiep():
     meta_tags = generate_meta_tags(
         title="Tỷ Số Trực Tiếp | Kèo Sư",
         description="Theo dõi tỷ số trực tiếp bóng đá tất cả các giải đấu.",
-        keywords="tỷ số trực tiếp, kết quả bóng đá"
+        keywords=["tỷ số trực tiếp", "kết quả bóng đá"]
     )
-    return render_template('ty-so-truc-tiep.html', meta_tags=meta_tags)
+
+    structured_data = create_structured_data("LiveBlogPosting", {
+        "headline": meta_tags["title"],
+        "description": meta_tags["description"],
+        "url": request.url
+    })
+
+    return render_template('ty-so-truc-tiep.html',
+        meta_tags=meta_tags,
+        structured_data=structured_data
+    )
 
 @main_bp.route('/bai-viet/<slug>')
 def article_detail(slug):
     article = Article.query.filter_by(slug=slug, published=True).first_or_404()
     article.views += 1
-    from core import db
     db.session.commit()
 
     related = Article.query.filter(
@@ -105,9 +147,27 @@ def article_detail(slug):
     meta_tags = generate_meta_tags(
         title=article.meta_title or article.title,
         description=article.meta_description or article.get_excerpt(160),
-        keywords=article.meta_keywords or f"{article.title}, {article.category.name}"
+        keywords=article.meta_keywords or f"{article.title}, {article.category.name}",
+        image=article.image,
+        url=request.url
     )
-    return render_template('article.html', article=article, related_articles=related, meta_tags=meta_tags)
+
+    structured_data = create_structured_data("Article", {
+        "title": article.title,
+        "description": meta_tags["description"],
+        "image": article.image,
+        "author": "Kèo Sư",
+        "published": str(article.created_at.date()),
+        "updated": str(article.updated_at.date()) if article.updated_at else str(article.created_at.date()),
+        "url": request.url
+    })
+
+    return render_template('article.html',
+        article=article,
+        related_articles=related,
+        meta_tags=meta_tags,
+        structured_data=structured_data
+    )
 
 @main_bp.route('/chuyen-muc/<slug>')
 @main_bp.route('/chuyen-muc/<slug>/<int:page>')
@@ -120,9 +180,22 @@ def category_articles(slug, page=1):
     meta_tags = generate_meta_tags(
         title=f"{category.name} | Kèo Sư",
         description=category.description or f"Tất cả bài viết về {category.name}",
-        keywords=f"{category.name}, {category.slug}"
+        keywords=[category.name, category.slug],
+        url=request.url
     )
-    return render_template('category.html', category=category, articles=articles, meta_tags=meta_tags)
+
+    structured_data = create_structured_data("CollectionPage", {
+        "name": category.name,
+        "description": meta_tags["description"],
+        "url": request.url
+    })
+
+    return render_template('category.html',
+        category=category,
+        articles=articles,
+        meta_tags=meta_tags,
+        structured_data=structured_data
+    )
 
 @main_bp.route('/search')
 def search():
@@ -143,6 +216,19 @@ def search():
     meta_tags = generate_meta_tags(
         title=f"Tìm kiếm: {query} | Kèo Sư" if query else "Tìm kiếm | Kèo Sư",
         description=f"Kết quả tìm kiếm cho '{query}'" if query else "Tìm kiếm bài viết",
-        keywords=f"tìm kiếm, {query}" if query else "tìm kiếm"
+        keywords=["tìm kiếm", query] if query else ["tìm kiếm"],
+        url=request.url
     )
-    return render_template('search.html', articles=articles, query=query, meta_tags=meta_tags)
+
+    structured_data = create_structured_data("SearchResultsPage", {
+        "name": "Kết quả tìm kiếm",
+        "description": meta_tags["description"],
+        "url": request.url
+    })
+
+    return render_template('search.html',
+        articles=articles,
+        query=query,
+        meta_tags=meta_tags,
+        structured_data=structured_data
+    )
