@@ -11,7 +11,7 @@ import re
 class Category(db.Model):
     __tablename__ = 'categories'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     slug = db.Column(db.String(100), unique=True, nullable=False)
     description = db.Column(db.Text)
@@ -35,7 +35,7 @@ class Category(db.Model):
 class Article(db.Model):
     __tablename__ = 'articles'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
     slug = db.Column(db.String(200), unique=True, nullable=False)
     content = db.Column(db.Text, nullable=False)
@@ -53,7 +53,7 @@ class Article(db.Model):
     meta_keywords = db.Column(db.String(500))
 
     # Foreign key
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
+    category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'), nullable=False)
 
     def __repr__(self):
         return f'<Article {self.title}>'
@@ -76,7 +76,7 @@ class Article(db.Model):
 class BettingOdd(db.Model):
     __tablename__ = 'betting_odds'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     match_name = db.Column(db.String(200), nullable=False)
     home_team = db.Column(db.String(100), nullable=False)
     away_team = db.Column(db.String(100), nullable=False)
@@ -110,7 +110,7 @@ class BettingOdd(db.Model):
 class Match(db.Model):
     __tablename__ = 'matches'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     home_team = db.Column(db.String(100), nullable=False)
     away_team = db.Column(db.String(100), nullable=False)
     match_date = db.Column(db.DateTime, nullable=False)
@@ -130,7 +130,7 @@ class Match(db.Model):
 class Admin(db.Model, UserMixin):
     __tablename__ = 'admins'
 
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
 
