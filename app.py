@@ -13,6 +13,14 @@ app = create_app()
 @app.template_global()
 def get_current_year():
     return datetime.now().year
+    
+@app.route("/test-db")
+def test_db():
+    try:
+        result = db.session.execute("SELECT 1")
+        return "✅ Connected to Supabase!"
+    except Exception as e:
+        return f"❌ Database error: {e}"
 
 # 🏃 Chạy ứng dụng
 if __name__ == "__main__":
