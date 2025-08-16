@@ -17,8 +17,13 @@ def login():
         if admin and check_password_hash(admin.password, password):
             login_user(admin)
             return redirect(url_for('admin.dashboard'))
-        flash('Sai tài khoản hoặc mật khẩu', 'danger')
+        flash('Sai tài khoản hoặc mật khẩu', 'danger')   
     return render_template('login.html')
+    
+@auth_bp.route("/login", methods=["GET", "POST"])
+def login():
+    ...
+    return render_template("login.html")
 
 @admin_bp.route('/logout')
 @login_required
