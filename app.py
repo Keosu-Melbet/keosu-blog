@@ -25,6 +25,10 @@ def load_user(user_id):
 def dashboard():
     return f"Chào mừng {current_user.email} đến trang quản trị!"
 
+import sys
+print("🔍 Python version:", sys.version)
+
+
 if __name__ == "__main__":
     with app.app_context():
         db.create_all()
