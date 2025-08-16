@@ -4,7 +4,7 @@ from flask import (
 )
 from sqlalchemy import or_, desc
 from datetime import datetime, timedelta
-from models import Article, Category, BettingOdd, Match
+from models import Article, Category, BettingOdd, Match, Admin
 from seo_utils import generate_meta_tags, create_structured_data
 from core import db
 
@@ -40,19 +40,20 @@ def login():
         email = request.form.get('email')
         password = request.form.get('password')
 
-        data = supabase.table("admins").select("*").eq("email", email).eq("password", password).execute()
-        if data.data:
+        admin = Admin.query.filter_by(email=email, password=password).first()
+        if admin:
             session['user'] = email
             return redirect('/dashboard')
         else:
-            return "Sai thông tin đăng nhập", 401
+            flash("Sai thông tin đăng nhập", "danger")
+            return redirect(url_for('main.login'))
 
     return render_template('login.html')
 
 @main_bp.route("/test")
 def test():
-    data = supabase.table("admins").select("*").execute()
-    return str(data.data)
+    admins = Admin.query.all()
+    return str([admin.email for admin in admins])
 
 @main_bp.route('/keo-thom')
 def keo_thom():
