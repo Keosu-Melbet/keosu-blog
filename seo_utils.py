@@ -1,5 +1,14 @@
 from markupsafe import Markup
 import json
+import re
+import unicodedata
+
+def generate_slug(text):
+    """Chuyển văn bản thành slug chuẩn SEO"""
+    text = unicodedata.normalize('NFKD', text).encode('ascii', 'ignore').decode('utf-8')
+    text = re.sub(r'[^\w\s-]', '', text).strip().lower()
+    return re.sub(r'[\s_-]+', '-', text)
+
 
 def generate_meta_tags(
     title,
