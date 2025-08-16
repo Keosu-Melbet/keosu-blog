@@ -16,7 +16,7 @@ from extensions import db, login_manager
 # 📦 Blueprints
 from main_routes import main_bp
 from admin_routes import admin_bp
-from auth import auth_bp  # ✅ Thêm blueprint đăng nhập
+from auth import auth_bp
 
 # 🔍 SEO utilities
 from seo_utils import render_meta_tags, render_structured_data
@@ -24,7 +24,7 @@ from seo_utils import render_meta_tags, render_structured_data
 def create_app():
     print("📦 DATABASE_URL =", os.getenv("DATABASE_URL"))
 
-    """🚀 Tạo và cấu hình Flask app"""
+    # 🚀 Tạo Flask app
     app = Flask(__name__)
 
     # ⚙️ Cấu hình ứng dụng
@@ -35,23 +35,28 @@ def create_app():
         "SECRET_KEY": os.getenv("SECRET_KEY", "default-secret-key"),
     })
 
-    # 📁 Đảm bảo thư mục upload tồn tại
+    # 📁 Tạo thư mục upload nếu chưa có
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-    # 🛡️ Xử lý proxy headers (Heroku, Render, Nginx)
+    # 🛡️ Xử lý proxy headers (Render, Heroku, Nginx)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     # 🔌 Khởi tạo extensions
     db.init_app(app)
     login_manager.init_app(app)
-    login_manager.login_view = "auth.login"  # ✅ Redirect nếu chưa đăng nhập
+    login_manager.login_view = "auth.login"
+
+    @login_manager.user_loader
+    def load_user(user_id):
+        from models import Admin
+        return Admin.query.get(int(user_id))
 
     # 🔗 Đăng ký blueprint
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp)
-    app.register_blueprint(auth_bp)  # ✅ Thêm route /auth/login
+    app.register_blueprint(auth_bp)
 
-    # 🌐 Tích hợp hàm SEO vào Jinja
+    # 🌐 Tích hợp SEO helpers vào Jinja
     app.jinja_env.globals['render_meta_tags'] = render_meta_tags
     app.jinja_env.globals['render_structured_data'] = render_structured_data
 
