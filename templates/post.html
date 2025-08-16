@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- ✅ SEO Meta Tags -->
+    {{ render_meta_tags(meta_tags) }}
+
+    <!-- ✅ Structured Data -->
+    {{ render_structured_data(structured_data) }}
+
+    <!-- Favicon -->
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <!-- Title fallback -->
+    <title>{{ meta_tags.title }}</title>
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/">🏠 Trang chủ</a>
+            <a href="/chuyen-muc">📂 Chuyên mục</a>
+        </nav>
+    </header>
+
+    <main>
+        <article class="post">
+            <h1>{{ post.title }}</h1>
+            <p class="post-meta">
+                🖊️ Tác giả: {{ post.author }} |
+                🗓️ Ngày đăng: {{ post.published }}
+            </p>
+
+            {% if post.image %}
+                <img src="{{ post.image }}" alt="{{ post.title }}" class="post-image">
+            {% endif %}
+
+            <div class="post-content">
+                <p>{{ post.description }}</p>
+                <!-- Bạn có thể thêm nội dung chi tiết ở đây -->
+            </div>
+
+            <!-- Chia sẻ mạng xã hội -->
+            <div class="share-buttons">
+                <p>📤 Chia sẻ bài viết:</p>
+                <a href="https://www.facebook.com/sharer/sharer.php?u={{ post.url }}" target="_blank">Facebook</a>
+                <a href="https://twitter.com/intent/tweet?url={{ post.url }}&text={{ post.title }}" target="_blank">Twitter</a>
+                <a href="https://www.linkedin.com/shareArticle?mini=true&url={{ post.url }}" target="_blank">LinkedIn</a>
+            </div>
+        </article>
+    </main>
+
+    <footer>
+        <p>&copy; {{ get_current_year() }} Kèo Sư. All rights reserved.</p>
+    </footer>
+</body>
+</html>
