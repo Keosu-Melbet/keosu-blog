@@ -6,7 +6,6 @@ from sqlalchemy import or_, desc
 from datetime import datetime, timedelta
 from models import Article, Category, BettingOdd, Match
 from seo_utils import generate_meta_tags, create_structured_data
-from supabase_client import supabase
 from core import db
 
 main_bp = Blueprint('main', __name__)
