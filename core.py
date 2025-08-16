@@ -3,27 +3,30 @@ import logging
 from flask import Flask
 from werkzeug.middleware.proxy_fix import ProxyFix
 
-# Load biến môi trường từ .env nếu có
+# 🔐 Load biến môi trường từ .env nếu có
 try:
     from dotenv import load_dotenv
     load_dotenv()
 except ImportError:
     pass
 
-# Extensions
+# 🔌 Extensions
 from extensions import db, login_manager
 
-# Blueprints
+# 📦 Blueprints
 from main_routes import main_bp
 from admin_routes import admin_bp
 
-# Models
+# 🧠 Models
 from models import Category
+
+# 🔍 SEO utilities
+from seo_utils import render_meta_tags, render_structured_data
 
 def create_app():
     app = Flask(__name__)
 
-    # 🔧 Cấu hình ứng dụng
+    # ⚙️ Cấu hình ứng dụng
     app.config.update({
         "SQLALCHEMY_DATABASE_URI": os.getenv("DATABASE_URL", "sqlite:///keosu.db"),
         "SQLALCHEMY_TRACK_MODIFICATIONS": False,
@@ -34,30 +37,37 @@ def create_app():
     # 📁 Đảm bảo thư mục upload tồn tại
     os.makedirs(app.config["UPLOAD_FOLDER"], exist_ok=True)
 
-    # 🛡️ Xử lý proxy headers (nếu deploy qua Nginx, Heroku, v.v.)
+    # 🛡️ Xử lý proxy headers (Heroku, Render, Nginx)
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
 
     # 🔌 Khởi tạo extensions
     db.init_app(app)
     login_manager.init_app(app)
 
-    # 🔗 Đăng ký các blueprint
+    # 🔗 Đăng ký blueprint
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp)
+
+    # 🌐 Tích hợp hàm SEO vào Jinja
+    app.jinja_env.globals['render_meta_tags'] = render_meta_tags
+    app.jinja_env.globals['render_structured_data'] = render_structured_data
 
     # 🧱 Khởi tạo dữ liệu mặc định
     with app.app_context():
         db.create_all()
         _initialize_default_categories(app)
 
-    # 📋 Logging cơ bản
+    # 📋 Logging
     logging.basicConfig(level=logging.INFO)
     app.logger.info("✅ Ứng dụng Flask đã khởi tạo thành công.")
 
     return app
 
 def _initialize_default_categories(app):
-    default_categories = ["Ăn uống", "Giải trí", "Học tập", "Mua sắm", "Khác"]
+    """📦 Tạo chuyên mục mặc định nếu chưa có"""
+    default_categories = [
+        "Ăn uống", "Giải trí", "Học tập", "Mua sắm", "Khác"
+    ]
     created = False
 
     for name in default_categories:
