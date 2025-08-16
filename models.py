@@ -1,3 +1,5 @@
+# models.py
+
 from extensions import db
 from flask_login import UserMixin
 from datetime import datetime
@@ -17,9 +19,10 @@ class Category(db.Model):
     description = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    # Relationship
+    # Relationships
     articles = db.relationship('Article', backref='category', lazy=True)
 
+    # Utility
     def __repr__(self):
         return f'<Category {self.name}>'
 
@@ -55,6 +58,7 @@ class Article(db.Model):
     # Foreign key
     category_id = db.Column(db.BigInteger, db.ForeignKey('categories.id'), nullable=False)
 
+    # Utility
     def __repr__(self):
         return f'<Article {self.title}>'
 
@@ -101,6 +105,7 @@ class BettingOdd(db.Model):
 
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Utility
     def __repr__(self):
         return f'<BettingOdd {self.home_team} vs {self.away_team}>'
 
@@ -121,6 +126,7 @@ class Match(db.Model):
     away_score = db.Column(db.Integer)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
+    # Utility
     def __repr__(self):
         return f'<Match {self.home_team} vs {self.away_team}>'
 
@@ -134,17 +140,18 @@ class Admin(db.Model, UserMixin):
     username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
 
+    # Utility
+    def __repr__(self):
+        return f'<Admin {self.username}>'
+
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
 
-    def __repr__(self):
-        return f'<Admin {self.username}>'
-
 # -----------------------------
-# ⚙️ Auto-slug generation
+# ⚙️ Auto-slug generation events
 # -----------------------------
 @listens_for(Category, 'before_insert')
 def generate_category_slug(mapper, connection, target):
