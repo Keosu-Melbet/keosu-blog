@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, flash
 from flask_login import login_user, logout_user, login_required
 from werkzeug.security import check_password_hash
-from supabase_client import supabase
 from models import Admin
 
 auth_bp = Blueprint("auth", __name__, url_prefix="/auth")
