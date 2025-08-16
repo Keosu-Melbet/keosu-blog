@@ -1,31 +1,30 @@
-import os
-import logging
-from datetime import datetime
-from core import create_app
+from flask import Flask, redirect, url_for
+from flask_login import LoginManager, login_required, current_user
+from models import db, Admin
+from auth import auth_bp
+from config import Config
 
-# 🔧 Logging setup
-logging.basicConfig(level=logging.INFO)
+app = Flask(__name__)
+app.config.from_object(Config)
 
-# 🚀 Tạo Flask app từ core.py
-app = create_app()
+db.init_app(app)
 
-# 📅 Template global: năm hiện tại
-@app.template_global()
-def get_current_year():
-    return datetime.now().year
-    
-@app.route("/test-db")
-def test_db():
-    try:
-        result = db.session.execute("SELECT 1")
-        return "✅ Connected to Supabase!"
-    except Exception as e:
-        return f"❌ Database error: {e}"
+login_manager = LoginManager()
+login_manager.login_view = "auth.login"
+login_manager.init_app(app)
 
-# 🏃 Chạy ứng dụng
+app.register_blueprint(auth_bp)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return Admin.query.get(int(user_id))
+
+@app.route("/")
+@login_required
+def dashboard():
+    return f"Chào mừng {current_user.email} đến trang quản trị!"
+
 if __name__ == "__main__":
-    app.run(
-        debug=os.getenv("FLASK_DEBUG", "false").lower() == "true",
-        host="0.0.0.0",
-        port=int(os.getenv("PORT", 5000))
-    )
+    with app.app_context():
+        db.create_all()
+    app.run(debug=True)
