@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for
 from flask_login import LoginManager, login_required, current_user
-from models import db, Admin
+from extensions import db
+from models import Admin
 from auth import auth_bp
 from config import Config
 
