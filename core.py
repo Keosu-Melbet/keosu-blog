@@ -17,13 +17,11 @@ from extensions import db, login_manager
 from main_routes import main_bp
 from admin_routes import admin_bp
 
-# 🧠 Models
-from models import Category
-
 # 🔍 SEO utilities
 from seo_utils import render_meta_tags, render_structured_data
 
 def create_app():
+    """🚀 Tạo và cấu hình Flask app"""
     app = Flask(__name__)
 
     # ⚙️ Cấu hình ứng dụng
@@ -52,33 +50,8 @@ def create_app():
     app.jinja_env.globals['render_meta_tags'] = render_meta_tags
     app.jinja_env.globals['render_structured_data'] = render_structured_data
 
-    # 🧱 Khởi tạo dữ liệu mặc định
-    with app.app_context():
-        db.create_all()
-        _initialize_default_categories(app)
-
     # 📋 Logging
     logging.basicConfig(level=logging.INFO)
-    app.logger.info("✅ Ứng dụng Flask đã khởi tạo thành công.")
+    app.logger.info("✅ Flask app đã khởi tạo.")
 
     return app
-
-def _initialize_default_categories(app):
-    """📦 Tạo chuyên mục mặc định nếu chưa có"""
-    default_categories = [
-        "Ăn uống", "Giải trí", "Học tập", "Mua sắm", "Khác"
-    ]
-    created = False
-
-    for name in default_categories:
-        if not Category.query.filter_by(name=name).first():
-            db.session.add(Category(name=name))
-            created = True
-
-    if created:
-        try:
-            db.session.commit()
-            app.logger.info("✅ Đã tạo chuyên mục mặc định.")
-        except Exception as e:
-            db.session.rollback()
-            app.logger.error(f"❌ Lỗi khi tạo chuyên mục mặc định: {e}")
