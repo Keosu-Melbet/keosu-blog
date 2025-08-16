@@ -138,9 +138,9 @@ class Admin(db.Model, UserMixin):
 
     id = db.Column(db.BigInteger, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
+    email = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(200), nullable=False)
 
-    # Utility
     def __repr__(self):
         return f'<Admin {self.username}>'
 
