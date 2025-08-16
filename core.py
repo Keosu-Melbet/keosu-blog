@@ -22,6 +22,8 @@ from auth import auth_bp  # ✅ Thêm blueprint đăng nhập
 from seo_utils import render_meta_tags, render_structured_data
 
 def create_app():
+    print("📦 DATABASE_URL =", os.getenv("DATABASE_URL"))
+
     """🚀 Tạo và cấu hình Flask app"""
     app = Flask(__name__)
 
