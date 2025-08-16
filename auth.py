@@ -27,7 +27,7 @@ def login():
         else:
             flash("❌ Sai tên đăng nhập hoặc mật khẩu.", "danger")
 
-    return render_template("auth/login.html")
+    return render_template("login.html")
 
 # 🚪 Route đăng xuất
 @auth_bp.route("/logout")
