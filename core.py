@@ -16,6 +16,7 @@ from extensions import db, login_manager
 # 📦 Blueprints
 from main_routes import main_bp
 from admin_routes import admin_bp
+from auth import auth_bp  # ✅ Thêm blueprint đăng nhập
 
 # 🔍 SEO utilities
 from seo_utils import render_meta_tags, render_structured_data
@@ -41,10 +42,12 @@ def create_app():
     # 🔌 Khởi tạo extensions
     db.init_app(app)
     login_manager.init_app(app)
+    login_manager.login_view = "auth.login"  # ✅ Redirect nếu chưa đăng nhập
 
     # 🔗 Đăng ký blueprint
     app.register_blueprint(main_bp)
     app.register_blueprint(admin_bp)
+    app.register_blueprint(auth_bp)  # ✅ Thêm route /auth/login
 
     # 🌐 Tích hợp hàm SEO vào Jinja
     app.jinja_env.globals['render_meta_tags'] = render_meta_tags
